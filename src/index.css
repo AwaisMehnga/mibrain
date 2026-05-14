@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────
+   MIBRAIN DESIGN SYSTEM
+   Single source of truth — edit tokens here to restyle
+   the entire app. All @theme values auto-generate Tailwind
+   utilities: bg-*, text-*, border-*, font-*, rounded-*, shadow-*
+   ───────────────────────────────────────────────────────── */
+
+@theme {
+
+  /* ── Backgrounds ────────────────────────────────────── */
+  --color-bg:       #0D0F14;   /* bg-bg       — deepest navy-black, main screen  */
+  --color-surface:  #141720;   /* bg-surface  — card background                  */
+  --color-raised:   #1C2030;   /* bg-raised   — elevated: sheets, modals          */
+  --color-input:    #1A1E2B;   /* bg-input    — input field fill                  */
+
+  /* ── Text ───────────────────────────────────────────── */
+  --color-primary:   #EEF0F5;  /* text-primary  — soft white body text            */
+  --color-secondary: #8B92A8;  /* text-secondary — labels, captions               */
+  --color-muted:     #4D5368;  /* text-muted    — placeholders, disabled          */
+  --color-inverse:   #0D0F14;  /* text-inverse  — text on accent buttons          */
+
+  /* ── Accent ─────────────────────────────────────────── */
+  --color-accent:   #7C6EF5;   /* bg/text-accent — signature violet-indigo        */
+
+  /* ── Status ─────────────────────────────────────────── */
+  --color-success:  #4CAF7D;   /* text/bg-success — logged, confirmed             */
+  --color-warning:  #FFB74D;   /* text/bg-warning — moderate alerts               */
+  --color-danger:   #EF5350;   /* text/bg-danger  — critical, high risk           */
+
+  /* ── Severity scale ─────────────────────────────────── */
+  --color-sev-1:    #4CAF7D;   /* 1–2  gentle green  */
+  --color-sev-3:    #8BC34A;   /* 3–4  yellow-green  */
+  --color-sev-5:    #FFD54F;   /* 5–6  amber         */
+  --color-sev-7:    #FF9800;   /* 7–8  orange        */
+  --color-sev-9:    #EF5350;   /* 9–10 deep red      */
+
+  /* ── Panic mode ─────────────────────────────────────── */
+  --color-panic:     #0A0810;  /* bg-panic     — near-black violet undertone      */
+  --color-panic-btn: #C62828;  /* bg-panic-btn — deep crimson, visible in dark    */
+  --color-panic-txt: #FFB4AB;  /* text-panic-txt — warm soft red-white            */
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-display: "DM Serif Display", serif;   /* font-display — headings, hero  */
+  --font-body:    "DM Sans", sans-serif;        /* font-body    — UI, body text   */
+  --font-mono:    "DM Mono", monospace;         /* font-mono    — numbers, data   */
+
+  /* ── Border radius ──────────────────────────────────── */
+  --radius-xs:   6px;      /* rounded-xs  — small tags            */
+  --radius-sm:   8px;      /* rounded-sm  — chips, small buttons  */
+  --radius-md:   12px;     /* rounded-md  — cards, inputs         */
+  --radius-lg:   16px;     /* rounded-lg  — sheets, modals        */
+  --radius-xl:   24px;     /* rounded-xl  — large buttons         */
+  --radius-2xl:  32px;     /* rounded-2xl — featured cards        */
+  --radius-full: 9999px;   /* rounded-full — pills, avatars       */
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-card:   0 2px 12px rgba(0,0,0,0.4);                /* shadow-card   */
+  --shadow-float:  0 8px 32px rgba(0,0,0,0.6);                /* shadow-float  */
+  --shadow-accent: 0 4px 20px rgba(124, 110, 245, 0.25);      /* shadow-accent */
+  --shadow-danger: 0 4px 20px rgba(239, 83, 80, 0.35);        /* shadow-danger */
+  --shadow-panic:  0 0 0 0 rgba(198, 40, 40, 0.5);            /* shadow-panic  */
+
+  /* ── Spacing (extends Tailwind defaults) ────────────── */
+  --spacing-safe: 20px;   /* horizontal screen padding  */
+  --spacing-card: 16px;   /* internal card padding      */
+
+  /* ── Transitions ────────────────────────────────────── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─────────────────────────────────────────────────────────
+   BASE STYLES
+   ───────────────────────────────────────────────────────── */
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #060608;
+    font-family: var(--font-body);
+    color: var(--color-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hide scrollbars everywhere — mobile feel */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+
+  /* ── Range slider reset ─────────────────────────────── */
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-raised);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: var(--shadow-float);
+    margin-top: -10px;
+  }
+  input[type=range]:focus { outline: none; }
+}
+
+/* ─────────────────────────────────────────────────────────
+   ANIMATIONS
+   ───────────────────────────────────────────────────────── */
+
+@keyframes pulseRing {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0px  rgba(198, 40, 40, 0.55); }
+  50%       { box-shadow: 0 0 0 18px rgba(198, 40, 40, 0);    }
+}
+
+@keyframes accentPulse {
+  0%, 100% { box-shadow: 0 0 0 0px  rgba(124, 110, 245, 0.5); }
+  50%       { box-shadow: 0 0 0 14px rgba(124, 110, 245, 0);   }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes loadingBar {
+  from { width: 0%;   }
+  to   { width: 100%; }
+}
+
+@keyframes spinCW {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes waveBar {
+  0%, 100% { height: 6px;  }
+  50%       { height: 28px; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Animation utility classes ───────────────────────────
+   Use these class names directly in JSX className props    */
+
+.anim-pulse-ring   { animation: pulseRing   2s ease-out        infinite; }
+.anim-pulse-glow   { animation: pulseGlow   2s ease-in-out     infinite; }
+.anim-accent-pulse { animation: accentPulse 2s ease-in-out     infinite; }
+.anim-fade-in-up   { animation: fadeInUp    0.35s var(--ease-out) both;  }
+.anim-slide-up     { animation: slideUp     0.4s  var(--ease-out) both;  }
+.anim-scale-in     { animation: scaleIn     0.35s var(--ease-spring) both; }
+.anim-loading-bar  { animation: loadingBar  1.2s  ease-in-out  forwards; }
+.anim-spin         { animation: spinCW      1.4s  linear       infinite; }
+.anim-blink        { animation: blink       1.2s  ease-in-out  infinite; }
+
+/* Waveform bars — used in Voice Log (C4) */
+.wave-bar { animation: waveBar 0.8s ease-in-out infinite; background-color: var(--color-accent); border-radius: var(--radius-full); width: 4px; }
+.wave-bar:nth-child(2)  { animation-delay: 0.06s;  }
+.wave-bar:nth-child(3)  { animation-delay: 0.12s;  }
+.wave-bar:nth-child(4)  { animation-delay: 0.18s;  }
+.wave-bar:nth-child(5)  { animation-delay: 0.24s;  }
+.wave-bar:nth-child(6)  { animation-delay: 0.30s;  }
+.wave-bar:nth-child(7)  { animation-delay: 0.36s;  }
+.wave-bar:nth-child(8)  { animation-delay: 0.30s;  }
+.wave-bar:nth-child(9)  { animation-delay: 0.24s;  }
+.wave-bar:nth-child(10) { animation-delay: 0.18s;  }
+.wave-bar:nth-child(11) { animation-delay: 0.12s;  }
+.wave-bar:nth-child(12) { animation-delay: 0.06s;  }
+
+/* ── Interactive feedback ────────────────────────────── */
+.btn-press:active {
+  transform: scale(0.97);
+  transition: transform 150ms var(--ease-out);
+}
