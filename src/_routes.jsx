@@ -6,6 +6,16 @@ const Log = lazy(() => import('./screens/log'))
 const Insights = lazy(() => import('./screens/insights'))
 const History = lazy(() => import('./screens/history'))
 const Profile = lazy(() => import('./screens/profile'))
+
+// Setup screens
+const Welcome = lazy(() => import('./screens/setup/welcome'))
+const Conditions = lazy(() => import('./screens/setup/conditions'))
+const Triggers = lazy(() => import('./screens/setup/triggers'))
+const Medications = lazy(() => import('./screens/setup/medications'))
+const NotificationsPermission = lazy(() => import('./screens/setup/notifications'))
+const CreateAccount = lazy(() => import('./screens/setup/create-account'))
+const SignIn = lazy(() => import('./screens/setup/signin'))
+
 export const routes = [
     {
         path: '/',
@@ -38,4 +48,37 @@ export const routes = [
             },
         ],
     },
+    {
+        path: '/setup',
+        children: [
+            {
+                path: 'welcome',
+                element: <Welcome />,
+            },
+            {
+                path: 'conditions',
+                element: <Conditions />,
+            },
+            {
+                path: 'triggers',
+                element: <Triggers />,
+            },
+            {
+                path: 'medications',
+                element: <Medications />,
+            },
+            {
+                path: 'notifications',
+                element: <NotificationsPermission />,
+            },
+            {
+                path: 'create-account',
+                element: <CreateAccount />,
+            },
+            {
+                path: 'signin',
+                element: <SignIn />,
+            },
+        ],
+    }
 ]

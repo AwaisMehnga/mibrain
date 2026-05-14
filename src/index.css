@@ -12,32 +12,27 @@
 @theme {
 
 /* ── Backgrounds (Primary to Tertiary scale) ────────── */
---color-primary:   #101513;
---color-secondary: #171E1B;
---color-tertiary:  #1E2623;
---color-input:     #222B28;
+  --color-primary:   #101513;
+  --color-secondary: #171E1B;
+  --color-tertiary:  #1E2623;
+  --color-input:     #222B28;
 
-/* ── Text/Foreground Colors ────────────────────────── */
---color-fg:        #EEF4F0;
---color-fg-secondary: #9BAAA3;
---color-fg-muted:     #66756F;
---color-fg-inverse:   #101513;
+  /* ── Text/Foreground Colors ────────────────────────── */
+  --color-fg:        #EEF4F0;
+  --color-fg-secondary: #9BAAA3;
+  --color-fg-muted:     #66756F;
+  --color-fg-inverse:   #101513;
 
-/* ── Accent ─────────────────────────────────────────── */
---color-accent:    #7FB69B;
+  /* ── Accent ─────────────────────────────────────────── */
+  --color-accent:    #7FB69B;
 
-/* ── Support Colors ─────────────────────────────────── */
---color-success:   #8CCF9B;
---color-warning:   #D8BE82;
---color-danger:    #D58C8C;
+  /* ── Support Colors ─────────────────────────────────── */
+  --color-success:   #8CCF9B;
+  --color-warning:   #D8BE82;
+  --color-danger:    #D58C8C;
 
-/* ── Borders ────────────────────────────────────────── */
---color-border:    #2B3531;
-
-  /* ── Status ─────────────────────────────────────────── */
-  --color-success:  #4CAF7D;   /* text/bg-success — logged, confirmed             */
-  --color-warning:  #FFB74D;   /* text/bg-warning — moderate alerts               */
-  --color-danger:   #EF5350;   /* text/bg-danger  — critical, high risk           */
+  /* ── Borders ────────────────────────────────────────── */
+  --color-border:    #2B3531;
 
   /* ── Severity scale ─────────────────────────────────── */
   --color-sev-1:    #4CAF7D;   /* 1–2  gentle green  */

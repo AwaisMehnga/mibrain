@@ -1,10 +1,20 @@
+import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router'
 import NavBar from './ui/components/nav-bar'
 import Topbar from './ui/components/topbar'
+import Splash from './screens/splash'
 
 export default function Layout() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div className="flex flex-col w-full h-screen bg-primary">
+      <Splash isVisible={showSplash} />
       <Topbar />
       <main className="flex-1 overflow-y-auto pt-15 pb-21">
         <Outlet />
