@@ -11,20 +11,28 @@
 
 @theme {
 
-  /* ── Backgrounds ────────────────────────────────────── */
-  --color-bg:       #0D0F14;   /* bg-bg       — deepest navy-black, main screen  */
-  --color-surface:  #141720;   /* bg-surface  — card background                  */
-  --color-raised:   #1C2030;   /* bg-raised   — elevated: sheets, modals          */
-  --color-input:    #1A1E2B;   /* bg-input    — input field fill                  */
+/* ── Backgrounds (Primary to Tertiary scale) ────────── */
+--color-primary:   #101513;
+--color-secondary: #171E1B;
+--color-tertiary:  #1E2623;
+--color-input:     #222B28;
 
-  /* ── Text ───────────────────────────────────────────── */
-  --color-primary:   #EEF0F5;  /* text-primary  — soft white body text            */
-  --color-secondary: #8B92A8;  /* text-secondary — labels, captions               */
-  --color-muted:     #4D5368;  /* text-muted    — placeholders, disabled          */
-  --color-inverse:   #0D0F14;  /* text-inverse  — text on accent buttons          */
+/* ── Text/Foreground Colors ────────────────────────── */
+--color-fg:        #EEF4F0;
+--color-fg-secondary: #9BAAA3;
+--color-fg-muted:     #66756F;
+--color-fg-inverse:   #101513;
 
-  /* ── Accent ─────────────────────────────────────────── */
-  --color-accent:   #7C6EF5;   /* bg/text-accent — signature violet-indigo        */
+/* ── Accent ─────────────────────────────────────────── */
+--color-accent:    #7FB69B;
+
+/* ── Support Colors ─────────────────────────────────── */
+--color-success:   #8CCF9B;
+--color-warning:   #D8BE82;
+--color-danger:    #D58C8C;
+
+/* ── Borders ────────────────────────────────────────── */
+--color-border:    #2B3531;
 
   /* ── Status ─────────────────────────────────────────── */
   --color-success:  #4CAF7D;   /* text/bg-success — logged, confirmed             */
@@ -91,7 +99,7 @@
   body {
     background-color: #060608;
     font-family: var(--font-body);
-    color: var(--color-primary);
+    color: var(--color-fg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -111,14 +119,14 @@
   input[type=range]::-webkit-slider-runnable-track {
     height: 8px;
     border-radius: var(--radius-full);
-    background: var(--color-raised);
+    background: var(--color-tertiary);
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: var(--color-fg);
     box-shadow: var(--shadow-float);
     margin-top: -10px;
   }
