@@ -2,7 +2,11 @@ import { lazy } from 'react'
 import Layout from './layout'
 
 const Home = lazy(() => import('./screens/home'))
+
+// logging screens
 const Log = lazy(() => import('./screens/log'))
+const PanicAttackLog = lazy(() => import('./screens/log/panic-attack'))
+
 const Insights = lazy(() => import('./screens/insights'))
 const History = lazy(() => import('./screens/history'))
 const Profile = lazy(() => import('./screens/profile'))
@@ -23,26 +27,33 @@ export const routes = [
         children: [
             {
                 index: true,
-                name: 'home',
+                name: 'Home',
                 element: <Home />,
             },
             {
-                name: 'log',
+                name: 'Log Pain',
                 path: 'log',
                 element: <Log />,
+                children: [
+                    {
+                        name: 'Panic Attack',
+                        path: 'panic-attack',
+                        element: <PanicAttackLog />,
+                    }
+                ],
             },
             {
-                name: 'insights',
+                name: 'Insights',
                 path: 'insights',
                 element: <Insights />,
             },
             {
-                name: 'history',
+                name: 'History',
                 path: 'history',
                 element: <History />,
             },
             {
-                name: 'profile',
+                name: 'Profile',
                 path: 'profile',
                 element: <Profile />,
             },
@@ -52,30 +63,37 @@ export const routes = [
         path: '/setup',
         children: [
             {
+                name: 'Welcome',
                 path: 'welcome',
                 element: <Welcome />,
             },
             {
+                name: 'Conditions',
                 path: 'conditions',
                 element: <Conditions />,
             },
             {
+                name: 'Triggers',
                 path: 'triggers',
                 element: <Triggers />,
             },
             {
+                name: 'Medications',
                 path: 'medications',
                 element: <Medications />,
             },
             {
+                name: 'Notifications Permission',
                 path: 'notifications',
                 element: <NotificationsPermission />,
             },
             {
+                name: 'Create Account',
                 path: 'create-account',
                 element: <CreateAccount />,
             },
             {
+                name: 'Sign In',
                 path: 'signin',
                 element: <SignIn />,
             },

@@ -123,11 +123,11 @@ function RiskCard({ isNoData }) {
 function QuickActions() {
   return (
     <section className="grid grid-cols-3 gap-2.5">
-      <button className="relative flex h-21.5 flex-col items-center justify-center gap-1 rounded-md border border-danger/30 bg-panic-btn/20 btn-press">
+      <Link to="/log/panic-attack" className="relative flex h-21.5 flex-col items-center justify-center gap-1 rounded-md border border-danger/30 bg-panic-btn/20 btn-press" aria-label="Log attack now">
         <span className="absolute w-9 h-9 rounded-full border border-danger/35 anim-pulse-ring" />
         <Bolt size={18} className="text-danger" />
         <span className="text-[13px] font-medium text-danger">Attack Now</span>
-      </button>
+      </Link>
 
       <button className="relative flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
         <ClipboardCheck size={18} className="text-fg-secondary" />
