@@ -1,8 +1,15 @@
 import { useState, useMemo } from 'react'
 import { useLocation } from 'react-router'
+import { useAuthStore } from '../../stores/authStore'
 import {
-  Bell, BrainCircuit, TrendingUp, Droplets, Trophy, Pill,
-  FileText, ChevronLeft, Search,
+  Bell,
+  TrendingUp,
+  Sun,
+  Trophy,
+  Pill,
+  ChevronLeft,
+  Search,
+  AlertTriangle,
 } from 'lucide-react'
 
 const routeMeta = {
@@ -15,70 +22,61 @@ const routeMeta = {
 
 const initialNotifications = [
   {
-    id: 1, group: 'Today', icon: BrainCircuit,
-    iconClass: 'text-accent', bgClass: 'bg-accent/12',
-    title: 'Migraine episode logged',
-    body: 'Severity 7 — left temporal. Duration 4h 20m.',
-    time: '2h ago', unread: true,
+    id: 1, group: 'Today', icon: AlertTriangle,
+    iconClass: 'text-danger', bgClass: 'bg-danger/12',
+    title: 'High risk day detected',
+    body: 'Your score is elevated this morning. Consider a low-stimulation schedule.',
+    time: '7:15 AM', unread: true,
   },
   {
-    id: 2, group: 'Today', icon: Droplets,
-    iconClass: 'text-[#4CA8EF]', bgClass: 'bg-[rgba(76,168,239,0.12)]',
-    title: 'Hydration reminder',
-    body: "You've logged under 1L today. Dehydration is a common migraine trigger.",
-    time: '5h ago', unread: true,
-  },
-  {
-    id: 3, group: 'Yesterday', icon: TrendingUp,
-    iconClass: 'text-success', bgClass: 'bg-success/12',
-    title: 'New pattern detected',
-    body: 'Attacks most often occur on Mondays between 8–10 AM. Check Insights.',
-    time: 'Yesterday, 9:14 AM', unread: false,
-  },
-  {
-    id: 4, group: 'Yesterday', icon: Pill,
+    id: 2, group: 'Today', icon: Sun,
     iconClass: 'text-warning', bgClass: 'bg-warning/12',
-    title: 'Medication logged',
-    body: 'Sumatriptan 50mg recorded at 11:30 PM.',
-    time: 'Yesterday, 11:30 PM', unread: false,
+    title: 'Good morning! Time for your 30-second check-in',
+    body: 'A quick check-in improves your prediction accuracy.',
+    time: '8:00 AM', unread: true,
   },
   {
-    id: 5, group: 'This Week', icon: Trophy,
+    id: 3, group: 'Today', icon: Pill,
+    iconClass: 'text-[#6FA9FF]', bgClass: 'bg-[rgba(111,169,255,0.14)]',
+    title: 'Time for Topiramate',
+    body: 'Medication reminder based on your current schedule.',
+    time: '9:00 AM', unread: false,
+  },
+  {
+    id: 4, group: 'Today', icon: Trophy,
     iconClass: 'text-sev-5', bgClass: 'bg-sev-5/12',
     title: '7-day logging streak!',
-    body: 'Consistent tracking helps uncover your triggers faster. Keep it up.',
-    time: 'Mon, 8:00 AM', unread: false,
+    body: 'Consistency helps mibrain learn your patterns faster.',
+    time: '10:24 AM', unread: false,
   },
   {
-    id: 6, group: 'This Week', icon: FileText,
-    iconClass: 'text-accent', bgClass: 'bg-accent/12',
-    title: 'Weekly report ready',
-    body: '3 episodes this week — down from 5 last week. View full report in Insights.',
-    time: 'Sun, 9:00 AM', unread: false,
-  },
-  {
-    id: 7, group: 'Earlier', icon: TrendingUp,
+    id: 5, group: 'Earlier', icon: TrendingUp,
     iconClass: 'text-success', bgClass: 'bg-success/12',
-    title: 'Sleep pattern linked',
-    body: 'Episodes are 2× more likely after less than 6h of sleep.',
-    time: '12 May', unread: false,
+    title: 'Lower risk trend this week',
+    body: 'You had fewer high-severity entries than last week.',
+    time: 'Yesterday', unread: false,
   },
   {
-    id: 8, group: 'Earlier', icon: Pill,
+    id: 6, group: 'Earlier', icon: Pill,
     iconClass: 'text-warning', bgClass: 'bg-warning/12',
-    title: "Medication reminder",
-    body: "You haven't logged any medication in 3 days.",
-    time: '11 May', unread: false,
+    title: 'Medication reminder',
+    body: 'You skipped one scheduled entry this week.',
+    time: 'May 11', unread: false,
   },
 ]
 
-const groups = ['Today', 'Yesterday', 'This Week', 'Earlier']
+const groups = ['Today', 'Earlier']
 
 function greeting() {
   const h = new Date().getHours()
   if (h < 12) return 'Good morning'
   if (h < 17) return 'Good afternoon'
   return 'Good evening'
+}
+
+function userDisplayName(user) {
+  if (!user?.name) return 'there'
+  return user.name.split(' ')[0]
 }
 
 function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
@@ -110,27 +108,24 @@ function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
           <ChevronLeft size={22} strokeWidth={2} className="text-fg" />
         </button>
         <span className="text-[15px] font-semibold text-fg">Notifications</span>
-        <div className="w-9" />
+        <button
+          onClick={onMarkAllRead}
+          className={`text-[13px] font-medium ${unreadCount > 0 ? 'text-accent' : 'text-fg-muted'}`}
+        >
+          Mark all read
+        </button>
       </div>
 
       {/* Summary strip */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/12 border border-accent/20">
-            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-[12px] font-medium text-accent">{unreadCount} unread</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/4 border border-white/8">
-            <div className="w-1.5 h-1.5 rounded-full bg-fg-muted" />
-            <span className="text-[12px] font-medium text-fg-secondary">{readCount} read</span>
-          </div>
+      <div className="flex items-center gap-2 px-5 py-3 border-b border-white/5 shrink-0">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/12 border border-accent/20">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="text-[12px] font-medium text-accent">{unreadCount} unread</span>
         </div>
-        <button
-          onClick={onMarkAllRead}
-          className={`text-[12px] font-medium transition-colors duration-200 ${unreadCount > 0 ? 'text-accent' : 'text-fg-muted'}`}
-        >
-          Mark all as read
-        </button>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/4 border border-white/8">
+          <div className="w-1.5 h-1.5 rounded-full bg-fg-muted" />
+          <span className="text-[12px] font-medium text-fg-secondary">{readCount} read</span>
+        </div>
       </div>
 
       {/* Search bar */}
@@ -163,12 +158,9 @@ function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
                   return (
                     <div
                       key={n.id}
-                      className={`flex items-start gap-3 px-4 py-4 relative ${n.unread ? 'bg-accent/5' : ''} ${i < items.length - 1 ? 'border-b border-white/4' : ''}`}
+                      className={`flex min-h-12 items-start gap-3 px-4 py-3 relative ${n.unread ? 'bg-secondary border-l-4 border-accent' : 'bg-primary'} ${i < items.length - 1 ? 'border-b border-white/4' : ''}`}
                     >
-                      {n.unread && (
-                        <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full bg-accent" />
-                      )}
-                      <div className={`flex items-center justify-center w-10 h-10 shrink-0 rounded-xl ${n.bgClass}`}>
+                      <div className={`flex items-center justify-center w-9 h-9 shrink-0 rounded-full ${n.bgClass}`}>
                         <Icon size={17} strokeWidth={1.8} className={n.iconClass} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -201,6 +193,7 @@ function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
 
 export default function Topbar() {
   const { pathname } = useLocation()
+  const user = useAuthStore((state) => state.auth.user)
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(initialNotifications)
 
@@ -222,11 +215,10 @@ export default function Topbar() {
       >
         {isHome ? (
           <div className="flex flex-col justify-center gap-0.5">
-            <div className="flex items-center gap-1.5">
-              <BrainCircuit size={18} className="text-accent" strokeWidth={1.8} />
-              <span className="text-[15px] font-semibold tracking-tight text-fg">miBrain</span>
-            </div>
-            <span className="text-[12px] leading-none text-fg-muted">{greeting()}</span>
+            <span className="ext-[16px] font-semibold leading-tight text-fg">
+              {greeting()}, {userDisplayName(user)}
+            </span>
+            <span className="text-[12px] leading-none text-fg-muted">Know before it hits.</span>
           </div>
         ) : (
           <div className="flex flex-col justify-center gap-0.5">
