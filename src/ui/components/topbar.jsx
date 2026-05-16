@@ -19,6 +19,7 @@ const routeMeta = {
   '/log/end-attack': { title: 'End Attack', sub: 'Capture aftermath' },
   '/check-in': { title: null, sub: null },
   '/insights': { title: 'Insights',   sub: 'Patterns & trends' },
+  '/insights/:trigger': { title: 'Insight Detail', sub: 'Trigger-specific analysis' },
   '/history':  { title: 'History',    sub: 'Past episodes' },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
 }
@@ -209,7 +210,11 @@ export default function Topbar() {
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(initialNotifications)
 
-  const meta = routeMeta[pathname] ?? { title: null, sub: null }
+  let meta = routeMeta[pathname] ?? { title: null, sub: null }
+  // Support parameterized routes (e.g. /insights/:trigger)
+  if ((meta.title === null || meta.title === undefined) && pathname.startsWith('/insights/')) {
+    meta = routeMeta['/insights/:trigger'] ?? meta
+  }
   const isHome = pathname === '/'
   const unreadCount = notifications.filter((n) => n.unread).length
 

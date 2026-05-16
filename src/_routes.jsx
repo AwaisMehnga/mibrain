@@ -11,7 +11,11 @@ const EndAttack = lazy(() => import('./screens/log/end-attack'))
 const VoiceLog = lazy(() => import('./screens/log/voice'))
 const CheckIn = lazy(() => import('./screens/check-in'))
 
+// insights screens 
 const Insights = lazy(() => import('./screens/insights'))
+const Overview = lazy(() => import('./screens/insights/overview'))
+const InsightDetail = lazy(() => import('./screens/insights/detail'))
+
 const History = lazy(() => import('./screens/history'))
 const HistoryDetail = lazy(() => import('./screens/history/detail'))
 const Profile = lazy(() => import('./screens/profile'))
@@ -68,9 +72,20 @@ export const routes = [
                 ],
             },
             {
-                name: 'Insights',
                 path: 'insights',
                 element: <Insights />,
+                children: [
+                    {
+                        index: true,
+                        name: 'Overview',
+                        element: <Overview />,
+                    }
+                    ,{
+                        name: 'Insight Detail',
+                        path: 'detail/:trigger',
+                        element: <InsightDetail />,
+                    }
+                ]
             },
             {
                 name: 'History',
