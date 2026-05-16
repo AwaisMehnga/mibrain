@@ -13,6 +13,7 @@ const CheckIn = lazy(() => import('./screens/check-in'))
 
 const Insights = lazy(() => import('./screens/insights'))
 const History = lazy(() => import('./screens/history'))
+const HistoryDetail = lazy(() => import('./screens/history/detail'))
 const Profile = lazy(() => import('./screens/profile'))
 
 // Setup screens
@@ -75,6 +76,11 @@ export const routes = [
                 name: 'History',
                 path: 'history',
                 element: <History />,
+            },
+            {
+                name: 'History Detail',
+                path: 'history/:attackId',
+                element: <HistoryDetail />,
             },
             {
                 name: 'Profile',
