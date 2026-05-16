@@ -5,6 +5,7 @@ import {
   Bolt,
   ClipboardCheck,
   Info,
+  Mic,
   Plus,
 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
@@ -129,13 +130,10 @@ function QuickActions() {
         <span className="text-[13px] font-medium text-danger">Attack Now</span>
       </Link>
 
-      <button className="relative flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
-        <ClipboardCheck size={18} className="text-fg-secondary" />
-        <span className="text-[13px] font-medium text-fg-secondary">Check-in</span>
-        <span className="absolute top-2 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 text-[10px] font-bold text-fg-inverse">
-          !
-        </span>
-      </button>
+      <Link to="/log/voice" className="relative flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press" aria-label="Voice log">
+        <Mic size={18} className="text-fg-secondary" />
+        <span className="text-[13px] font-medium text-fg-secondary">Voice Log</span>
+      </Link>
 
       <Link to={'/log'} className="flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
         <Plus size={18} className="text-fg-secondary" />

@@ -474,6 +474,7 @@ export default function Attack() {
           />
           <button
             type="button"
+            onClick={() => navigate('/log/voice')}
             className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-xl bg-tertiary text-accent btn-press"
             aria-label="Record voice note"
           >

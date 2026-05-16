@@ -8,6 +8,7 @@ const Log = lazy(() => import('./screens/log'))
 const PanicAttackLog = lazy(() => import('./screens/log/panic-attack'))
 const Attack = lazy(() => import('./screens/log/attack'))
 const EndAttack = lazy(() => import('./screens/log/end-attack'))
+const VoiceLog = lazy(() => import('./screens/log/voice'))
 
 const Insights = lazy(() => import('./screens/insights'))
 const History = lazy(() => import('./screens/history'))
@@ -51,6 +52,11 @@ export const routes = [
                         name: 'End Attack',
                         path: 'end-attack',
                         element: <EndAttack />,
+                    },
+                    {
+                        name: 'Voice Log',
+                        path: 'voice',
+                        element: <VoiceLog />,
                     }
                 ],
             },

@@ -8,6 +8,8 @@ export default function Layout() {
   const [showSplash, setShowSplash] = useState(true)
   const location = useLocation()
   const isPanicRoute = location.pathname === '/log/panic-attack'
+  const isVoiceRoute = location.pathname === '/log/voice'
+  const isFullscreenRoute = isPanicRoute || isVoiceRoute
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1000)
@@ -17,11 +19,11 @@ export default function Layout() {
   return (
     <div className="flex flex-col w-full h-screen bg-primary">
       <Splash isVisible={showSplash} />
-      {!isPanicRoute && <Topbar />}
-      <main className={`flex-1 overflow-y-auto ${isPanicRoute ? '' : 'pt-15 pb-21'}`}>
+      {!isFullscreenRoute && <Topbar />}
+      <main className={`flex-1 overflow-y-auto ${isFullscreenRoute ? '' : 'pt-15 pb-21'}`}>
         <Outlet />
       </main>
-      {!isPanicRoute && <NavBar />}
+      {!isFullscreenRoute && <NavBar />}
     </div>
   )
 }
