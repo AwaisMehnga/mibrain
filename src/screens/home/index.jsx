@@ -169,7 +169,9 @@ function ActiveAttackBanner({ isActive }) {
         <span className="w-2 h-2 rounded-full bg-danger anim-accent-pulse" />
         <p className="truncate text-[14px] font-semibold text-danger">Attack in progress - 1h 24m</p>
       </div>
-      <button className="shrink-0 rounded-full bg-danger px-3 py-1.5 text-[13px] font-medium text-fg">End Attack</button>
+      <Link to="/log/end-attack" className="shrink-0 rounded-full bg-danger px-3 py-1.5 text-[13px] font-medium text-fg btn-press">
+        End Attack
+      </Link>
     </section>
   )
 }

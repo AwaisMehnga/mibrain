@@ -470,7 +470,7 @@ export default function Attack() {
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Anything else you want to remember about this attack..."
-            className="min-h-[88px] w-full resize-none rounded-md bg-input py-4 pl-4 pr-14 text-[14px] leading-relaxed text-fg outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-accent/50"
+            className="min-h-22 w-full resize-none rounded-md bg-input py-4 pl-4 pr-14 text-[14px] leading-relaxed text-fg outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-accent/50"
           />
           <button
             type="button"
@@ -510,7 +510,7 @@ export default function Attack() {
         </div>
 
         <div className="flex-1">{saved ? (
-          <section className="flex min-h-[360px] flex-col items-center justify-center gap-4 text-center anim-scale-in">
+          <section className="flex min-h-90 flex-col items-center justify-center gap-4 text-center anim-scale-in">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/12 text-accent">
               <Check size={28} />
             </div>

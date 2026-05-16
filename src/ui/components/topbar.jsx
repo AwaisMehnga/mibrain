@@ -16,6 +16,7 @@ const routeMeta = {
   '/':         { title: null,         sub: null },
   '/log':      { title: 'Log Attack', sub: 'Detailed attack entry' },
   '/log/attack': { title: 'Log Attack', sub: 'Detailed attack entry' },
+  '/log/end-attack': { title: 'End Attack', sub: 'Capture aftermath' },
   '/insights': { title: 'Insights',   sub: 'Patterns & trends' },
   '/history':  { title: 'History',    sub: 'Past episodes' },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
