@@ -137,10 +137,10 @@ function QuickActions() {
         </span>
       </button>
 
-      <button className="flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
+      <Link to={'/log'} className="flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
         <Plus size={18} className="text-fg-secondary" />
         <span className="text-[13px] font-medium text-fg-secondary">Log</span>
-      </button>
+      </Link>
     </section>
   )
 }

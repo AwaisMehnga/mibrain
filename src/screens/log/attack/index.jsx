@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { Check, ChevronLeft, Mic, Plus, HeartPulse, Weight, Zap, Flame, ChevronsLeftRight, Waves } from 'lucide-react'
 import face from '../../../assets/face.webp'
 
@@ -140,6 +141,7 @@ function DoseInput({ med, value, onChange }) {
 }
 
 export default function Attack() {
+  const navigate = useNavigate()
   const pickerRef = useRef(null)
   const [step, setStep] = useState(0)
   const [startTime, setStartTime] = useState(todayValue)
@@ -208,6 +210,7 @@ export default function Attack() {
   const goNext = () => {
     if (step >= activeSections.length - 1) {
       setSaved(true)
+      navigate('/')
       return
     }
     setStep((current) => current + 1)
