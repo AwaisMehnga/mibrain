@@ -135,9 +135,9 @@ function QuickActions() {
         <span className="text-[13px] font-medium text-fg-secondary">Voice Log</span>
       </Link>
 
-      <Link to={'/log'} className="flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
-        <Plus size={18} className="text-fg-secondary" />
-        <span className="text-[13px] font-medium text-fg-secondary">Log</span>
+    <Link to="/check-in" className="flex h-21.5 flex-col items-center justify-center gap-1 rounded-md bg-tertiary btn-press">
+        <ClipboardCheck size={18} className="text-fg-secondary" />
+        <span className="text-[13px] font-medium text-fg-secondary">Check-in</span>
       </Link>
     </section>
   )
@@ -170,6 +170,22 @@ function ActiveAttackBanner({ isActive }) {
       <Link to="/log/end-attack" className="shrink-0 rounded-full bg-danger px-3 py-1.5 text-[13px] font-medium text-fg btn-press">
         End Attack
       </Link>
+    </section>
+  )
+}
+
+function CheckinReminder() {
+  return (
+    <section className="rounded-lg border border-accent/15 bg-accent/8 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[12px] uppercase tracking-widest text-fg-secondary">Morning check-in</p>
+          <p className="mt-1 text-[14px] text-fg">Capture your baseline in 30 seconds.</p>
+        </div>
+        <Link to="/check-in" className="rounded-full bg-accent px-3 py-1.5 text-[13px] font-semibold text-fg-inverse btn-press">
+          Start
+        </Link>
+      </div>
     </section>
   )
 }
@@ -253,6 +269,7 @@ export default function Home() {
 
   return (
     <div className="px-5 py-5 space-y-4 pb-8 anim-fade-in-up">
+      {/* <CheckinReminder /> */}
       <RiskCard isNoData={isNoDataState} />
       <QuickActions />
       <InsightsTeaser isNoData={isNoDataState} />

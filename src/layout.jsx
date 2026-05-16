@@ -9,7 +9,8 @@ export default function Layout() {
   const location = useLocation()
   const isPanicRoute = location.pathname === '/log/panic-attack'
   const isVoiceRoute = location.pathname === '/log/voice'
-  const isFullscreenRoute = isPanicRoute || isVoiceRoute
+  const isCheckInRoute = location.pathname === '/check-in'
+  const isFullscreenRoute = isPanicRoute || isVoiceRoute || isCheckInRoute
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1000)

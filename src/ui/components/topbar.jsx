@@ -17,6 +17,7 @@ const routeMeta = {
   '/log':      { title: 'Log Attack', sub: 'Detailed attack entry' },
   '/log/attack': { title: 'Log Attack', sub: 'Detailed attack entry' },
   '/log/end-attack': { title: 'End Attack', sub: 'Capture aftermath' },
+  '/check-in': { title: null, sub: null },
   '/insights': { title: 'Insights',   sub: 'Patterns & trends' },
   '/history':  { title: 'History',    sub: 'Past episodes' },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
@@ -31,7 +32,7 @@ const initialNotifications = [
     time: '7:15 AM', unread: true,
   },
   {
-    id: 2, group: 'Today', icon: Sun,
+    id: 2, group: 'Today', icon: Sun, to: '/check-in',
     iconClass: 'text-warning', bgClass: 'bg-warning/12',
     title: 'Good morning! Time for your 30-second check-in',
     body: 'A quick check-in improves your prediction accuracy.',
@@ -157,11 +158,8 @@ function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
               <div className="rounded-2xl overflow-hidden bg-secondary">
                 {items.map((n, i) => {
                   const Icon = n.icon
-                  return (
-                    <div
-                      key={n.id}
-                      className={`flex min-h-12 items-start gap-3 px-4 py-3 relative ${n.unread ? 'bg-secondary border-l-4 border-accent' : 'bg-primary'} ${i < items.length - 1 ? 'border-b border-white/4' : ''}`}
-                    >
+                  const content = (
+                    <>
                       <div className={`flex items-center justify-center w-9 h-9 shrink-0 rounded-full ${n.bgClass}`}>
                         <Icon size={17} strokeWidth={1.8} className={n.iconClass} />
                       </div>
@@ -174,6 +172,18 @@ function NotificationsOverlay({ notifications, onMarkAllRead, onClose }) {
                         </div>
                         <p className="text-[12px] mt-1 leading-relaxed text-fg-secondary">{n.body}</p>
                       </div>
+                    </>
+                  )
+
+                  const rowClass = `flex min-h-12 items-start gap-3 px-4 py-3 relative ${n.unread ? 'bg-secondary border-l-4 border-accent' : 'bg-primary'} ${i < items.length - 1 ? 'border-b border-white/4' : ''}`
+
+                  return n.to ? (
+                    <Link key={n.id} to={n.to} className={rowClass}>
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={n.id} className={rowClass}>
+                      {content}
                     </div>
                   )
                 })}

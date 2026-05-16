@@ -23,6 +23,7 @@ const initialState = {
     panicButtonLocation: 'home-screen',
     theme: 'dark',
   },
+  dailyCheckin: null,
   onboarding: {
     completedSteps: [],
     currentStep: 'welcome',
@@ -90,6 +91,11 @@ export const useAuthStore = create(
           preferences: { ...state.preferences, ...prefs },
         })),
 
+      saveDailyCheckin: (checkin) =>
+        set(() => ({
+          dailyCheckin: checkin,
+        })),
+
       // Onboarding completion
       completeOnboarding: () =>
         set((state) => ({
@@ -106,6 +112,7 @@ export const useAuthStore = create(
         auth: state.auth,
         healthProfile: state.healthProfile,
         preferences: state.preferences,
+        dailyCheckin: state.dailyCheckin,
         onboarding: state.onboarding,
       }),
     }
