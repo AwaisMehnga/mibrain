@@ -82,7 +82,7 @@ function RiskCard({ isNoData }) {
   const insightDaysRemaining = Math.max(14 - riskDays, 0)
 
   return (
-    <section className="rounded-lg bg-secondary p-5">
+    <Link to="/risk-detail" className="block rounded-lg bg-secondary p-5 btn-press">
       <div className="flex items-center justify-between">
         <p className="text-[12px] uppercase tracking-widest text-fg-secondary">Today's Risk Score</p>
         <button className="flex items-center justify-center w-8 h-8 rounded-full bg-tertiary text-fg-secondary">
@@ -117,7 +117,7 @@ function RiskCard({ isNoData }) {
           </div>
         </>
       )}
-    </section>
+    </Link>
   )
 }
 

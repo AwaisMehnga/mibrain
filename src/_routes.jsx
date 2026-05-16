@@ -15,6 +15,7 @@ const CheckIn = lazy(() => import('./screens/check-in'))
 const Insights = lazy(() => import('./screens/insights'))
 const Overview = lazy(() => import('./screens/insights/overview'))
 const InsightDetail = lazy(() => import('./screens/insights/detail'))
+const RiskDetail = lazy(() => import('./screens/risk-detail'))
 
 const History = lazy(() => import('./screens/history'))
 const HistoryDetail = lazy(() => import('./screens/history/detail'))
@@ -86,6 +87,11 @@ export const routes = [
                         element: <InsightDetail />,
                     }
                 ]
+            },
+            {
+                name: 'Risk Detail',
+                path: 'risk-detail',
+                element: <RiskDetail />,
             },
             {
                 name: 'History',
