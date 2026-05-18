@@ -23,6 +23,8 @@ const routeMeta = {
   '/insights/weekly': { title: 'Weekly Summary', sub: 'End-of-week digest' },
   '/risk-detail': { title: 'Risk Score', sub: 'Today\'s risk analysis' },
   '/history':  { title: 'History',    sub: 'Past episodes' },
+  '/history/calendar': { title: 'Calendar', sub: 'Monthly view' },
+  '/report': { title: 'Doctor Report', sub: null },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
 }
 

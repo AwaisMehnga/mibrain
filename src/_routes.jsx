@@ -19,7 +19,9 @@ const WeeklySummary = lazy(() => import('./screens/insights/weekly'))
 const RiskDetail = lazy(() => import('./screens/risk-detail'))
 
 const History = lazy(() => import('./screens/history'))
+const HistoryCalendar = lazy(() => import('./screens/history/calendar'))
 const HistoryDetail = lazy(() => import('./screens/history/detail'))
+const Report = lazy(() => import('./screens/report'))
 const Profile = lazy(() => import('./screens/profile'))
 
 // Setup screens
@@ -101,6 +103,16 @@ export const routes = [
                 name: 'History',
                 path: 'history',
                 element: <History />,
+            },
+            {
+                name: 'History Calendar',
+                path: 'history/calendar',
+                element: <HistoryCalendar />,
+            },
+            {
+                name: 'Doctor Report',
+                path: 'report',
+                element: <Report />,
             },
             {
                 name: 'History Detail',
