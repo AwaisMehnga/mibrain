@@ -224,6 +224,15 @@ export default function Overview() {
               <div className="mt-2 text-sm text-success">↓ 2 fewer attacks than last month</div>
             </div>
           </section>
+
+          {/* Weekly Summary Link */}
+          <Link to="/insights/weekly" className="rounded-lg bg-secondary p-5 flex items-center justify-between btn-press">
+            <div>
+              <h3 className="text-[14px] font-semibold text-fg">Weekly Summary</h3>
+              <p className="text-[12px] text-fg-secondary mt-1">View end-of-week digest</p>
+            </div>
+            <span className="text-accent">→</span>
+          </Link>
         </div>
       )}
     </div>

@@ -15,6 +15,7 @@ const CheckIn = lazy(() => import('./screens/check-in'))
 const Insights = lazy(() => import('./screens/insights'))
 const Overview = lazy(() => import('./screens/insights/overview'))
 const InsightDetail = lazy(() => import('./screens/insights/detail'))
+const WeeklySummary = lazy(() => import('./screens/insights/weekly'))
 const RiskDetail = lazy(() => import('./screens/risk-detail'))
 
 const History = lazy(() => import('./screens/history'))
@@ -84,8 +85,11 @@ export const routes = [
                     ,{
                         name: 'Insight Detail',
                         path: 'detail/:trigger',
-                        element: <InsightDetail />,
-                    }
+                        element: <InsightDetail />,                    },
+                    {
+                        name: 'Weekly Summary',
+                        path: 'weekly',
+                        element: <WeeklySummary />,                    }
                 ]
             },
             {

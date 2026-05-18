@@ -20,6 +20,7 @@ const routeMeta = {
   '/check-in': { title: null, sub: null },
   '/insights': { title: 'Insights',   sub: 'Patterns & trends' },
   '/insights/:trigger': { title: 'Insight Detail', sub: 'Trigger-specific analysis' },
+  '/insights/weekly': { title: 'Weekly Summary', sub: 'End-of-week digest' },
   '/risk-detail': { title: 'Risk Score', sub: 'Today\'s risk analysis' },
   '/history':  { title: 'History',    sub: 'Past episodes' },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
