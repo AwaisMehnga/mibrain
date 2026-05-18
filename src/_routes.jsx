@@ -22,6 +22,7 @@ const History = lazy(() => import('./screens/history'))
 const HistoryCalendar = lazy(() => import('./screens/history/calendar'))
 const HistoryDetail = lazy(() => import('./screens/history/detail'))
 const Report = lazy(() => import('./screens/report'))
+const Notifications = lazy(() => import('./screens/notifications'))
 const Profile = lazy(() => import('./screens/profile'))
 
 // Setup screens
@@ -113,6 +114,11 @@ export const routes = [
                 name: 'Doctor Report',
                 path: 'report',
                 element: <Report />,
+            },
+            {
+                name: 'Notifications',
+                path: 'notifications',
+                element: <Notifications />,
             },
             {
                 name: 'History Detail',

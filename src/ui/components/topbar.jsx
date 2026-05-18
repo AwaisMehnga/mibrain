@@ -25,6 +25,7 @@ const routeMeta = {
   '/history':  { title: 'History',    sub: 'Past episodes' },
   '/history/calendar': { title: 'Calendar', sub: 'Monthly view' },
   '/report': { title: 'Doctor Report', sub: null },
+  '/notifications': { title: 'Notifications', sub: 'App alerts & reminders' },
   '/profile':  { title: 'Profile',    sub: 'Your settings & data' },
 }
 
