@@ -1430,30 +1430,3 @@ All screens must meet these standards:
 
 **Total: 34 screens**
 
----
-
-## SECTION 7: STITCH PROMPT INSTRUCTIONS
-
-When feeding this to Google Stitch, use this system prompt prefix before each screen:
-
-```
-You are designing a screen for mibrain, an AI-powered migraine tracker app.
-Design system: Dark background (#0D0F14), accent color (#7C6EF5 violet-indigo), 
-typography: DM Serif Display for headings, DM Sans for body, DM Mono for numbers.
-Mobile frame: 390×844px. Dark mode only. Generous touch targets (min 56px for CTAs).
-Calm, premium, medical-adjacent but warm. No harsh whites. No purple gradients on white.
-Now design: [SCREEN NAME] — [SCREEN DESCRIPTION FROM THIS GUIDE]
-```
-
-Then paste the relevant screen specification from this document.
-
-Generate screens in this order for best consistency:
-1. Start with A2 (Welcome) to lock in visual tone
-2. Then B1 (Home) to establish the component library
-3. Then C1 (Panic Mode) to establish the dark emergency variant
-4. Then all remaining screens referencing the established components
-
----
-
-*End of mibrain Design Guide — MVP v1.0*
-*34 screens | 7 screen groups | 1 cohesive product*
