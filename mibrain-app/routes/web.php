@@ -8,9 +8,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('mibrain', function () {
+        return view('mibrain');
+    })->name('mibrain');
 });
 
 require __DIR__.'/settings.php';
