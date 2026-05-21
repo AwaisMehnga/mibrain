@@ -49,7 +49,7 @@ export default function Medications() {
 
   return (
     <OnboardingLayout
-      step={3}
+      step={4}
       totalSteps={5}
       onContinue={handleContinue}
       continueLabel="Continue"

@@ -23,7 +23,12 @@ function ProtectedRoutes() {
       window.location.replace('/setup/login')
       return
     }
-  }, [actions, auth.isAuthenticated, currentPath, isBootstrapped, isHydrated])
+
+    if (auth.isAuthenticated && !auth.isOnboarded) {
+      window.location.replace('/setup/conditions')
+      return
+    }
+  }, [actions, auth.isAuthenticated, auth.isOnboarded, currentPath, isBootstrapped, isHydrated])
 
   if (!isHydrated || !isBootstrapped) {
     return (

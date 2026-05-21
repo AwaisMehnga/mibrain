@@ -43,7 +43,7 @@ export default function Triggers() {
 
   return (
     <OnboardingLayout
-      step={2}
+      step={3}
       totalSteps={5}
       onContinue={handleContinue}
       continueDisabled={selected.length === 0}

@@ -52,7 +52,7 @@ export default function Welcome() {
 
         {/* Primary CTA */}
         <button
-          onClick={() => navigate('/setup/conditions')}
+          onClick={() => navigate('/setup/register')}
           className="w-full h-14 bg-accent text-fg-inverse rounded-xl font-semibold text-[15px] transition-all duration-200 hover:bg-accent active:scale-95 shadow-lg"
         >
           Get Started

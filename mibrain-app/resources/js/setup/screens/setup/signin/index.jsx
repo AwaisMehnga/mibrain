@@ -49,7 +49,7 @@ export default function SignIn() {
     actions
       .login({ email: formData.email, password: formData.password })
       .then((user) => {
-        navigate(user?.isOnboarded ? '/' : '/setup/welcome', { replace: true })
+        window.location.replace(user?.isOnboarded ? '/' : '/setup/conditions')
       })
       .catch((error) => {
         const serverErrors = error?.response?.data?.errors ?? {}

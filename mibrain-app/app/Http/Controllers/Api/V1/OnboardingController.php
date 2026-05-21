@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\ConditionCatalog;
 use App\Models\MedicationCatalog;
+use App\Models\NotificationPreference;
 use App\Models\TriggerCatalog;
+use App\Models\UserCondition;
+use App\Models\UserMedication;
+use App\Models\UserTrigger;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class OnboardingController extends Controller
 {
@@ -54,9 +59,9 @@ class OnboardingController extends Controller
 
     public function complete(Request $request): JsonResponse
     {
-        if ($request->user()) {
-            $request->user()->forceFill(['is_onboarded' => true])->save();
-        }
+        $this->persistOnboardingDraft($request);
+
+        $request->user()->forceFill(['is_onboarded' => true])->save();
 
         $request->session()->forget('onboarding_draft');
 
@@ -130,5 +135,84 @@ class OnboardingController extends Controller
                 ['id' => 'propranolol', 'name' => 'Propranolol'],
                 ['id' => 'aimovig', 'name' => 'Aimovig'],
             ];
+    }
+
+    private function persistOnboardingDraft(Request $request): void
+    {
+        $user = $request->user();
+        $draft = $request->session()->get('onboarding_draft', []);
+
+        $profileData = [
+            'country_code' => $draft['countryCode'] ?? $user->profile?->country_code,
+            'timezone' => $draft['timezone'] ?? $user->profile?->timezone ?? config('app.timezone'),
+            'locale' => $draft['locale'] ?? $user->profile?->locale ?? app()->getLocale(),
+            'measurement_system' => $draft['preferences']['measurementSystem'] ?? $user->profile?->measurement_system ?? 'imperial',
+        ];
+
+        $user->profile()->updateOrCreate(['user_id' => $user->id], $profileData);
+
+        foreach (($draft['conditions'] ?? []) as $code) {
+            $condition = ConditionCatalog::firstOrCreate(
+                ['code' => $code],
+                ['name' => Str::headline($code), 'description' => null, 'is_active' => true]
+            );
+
+            UserCondition::updateOrCreate([
+                'user_id' => $user->id,
+                'condition_id' => $condition->id,
+            ], [
+                'source' => 'onboarding',
+            ]);
+        }
+
+        foreach (($draft['triggers'] ?? []) as $code) {
+            $trigger = TriggerCatalog::firstOrCreate(
+                ['code' => $code],
+                ['name' => Str::headline($code), 'category' => 'custom', 'description' => null, 'is_active' => true]
+            );
+
+            UserTrigger::updateOrCreate([
+                'user_id' => $user->id,
+                'trigger_id' => $trigger->id,
+            ], [
+                'confidence' => 'likely',
+            ]);
+        }
+
+        foreach (($draft['medications'] ?? []) as $type => $medications) {
+            foreach ($medications as $medicationValue) {
+                $name = is_array($medicationValue) ? ($medicationValue['name'] ?? $medicationValue['id'] ?? 'Medication') : $medicationValue;
+
+                $catalog = MedicationCatalog::firstOrCreate(
+                    ['generic_name' => $name],
+                    ['brand_name' => null, 'medication_class' => $type === 'acute' ? 'triptan' : 'preventive', 'route' => 'oral', 'country_code' => $profileData['country_code'], 'is_active' => true]
+                );
+
+                UserMedication::updateOrCreate([
+                    'user_id' => $user->id,
+                    'medication_id' => $catalog->id,
+                ], [
+                    'type' => $type,
+                    'is_active' => true,
+                ]);
+            }
+        }
+
+        $preferences = $draft['preferences'] ?? [];
+
+        if (($preferences['notificationsEnabled'] ?? false) === true) {
+            foreach (['risk_alert' => 'riskAlertTime', 'daily_checkin' => 'checkinTime'] as $type => $field) {
+                NotificationPreference::updateOrCreate([
+                    'user_id' => $user->id,
+                    'notification_type' => $type,
+                ], [
+                    'enabled' => true,
+                    'preferred_time' => $preferences[$field] ?? ($type === 'risk_alert' ? '07:30' : '08:00'),
+                    'quiet_hours_start' => null,
+                    'quiet_hours_end' => null,
+                    'timezone' => $profileData['timezone'],
+                ]);
+            }
+        }
     }
 }

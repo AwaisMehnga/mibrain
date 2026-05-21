@@ -40,7 +40,7 @@ export const routes = [
         children: [
             {
                 index: true,
-                element: <Navigate to="login" replace />,
+                element: <Navigate to="register" replace />,
             },
             {
                 name: 'Welcome',

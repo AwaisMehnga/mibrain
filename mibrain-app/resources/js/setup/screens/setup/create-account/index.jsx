@@ -62,15 +62,13 @@ export default function CreateAccount() {
     setErrors({})
 
     try {
-      await actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
       await actions.register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         password_confirmation: formData.confirmPassword,
       })
-      await actions.completeOnboarding()
-      navigate('/', { replace: true })
+      navigate('/setup/conditions', { replace: true })
     } catch (error) {
       const serverErrors = error?.response?.data?.error?.fields ?? error?.response?.data?.errors ?? {}
       setErrors({
@@ -86,7 +84,7 @@ export default function CreateAccount() {
   }
 
   return (
-    <OnboardingLayout step={5} totalSteps={5} onBack={() => navigate('/setup/notifications')} continueLabel="Create Account" onContinue={handleSubmit} continueDisabled={isLoading}>
+    <OnboardingLayout step={1} totalSteps={5} onBack={() => navigate('/setup/login')} continueLabel="Create Account" onContinue={handleSubmit} continueDisabled={isLoading}>
       <div className="space-y-6 py-6">
         <div className="space-y-2">
           <h2 className="text-[26px] font-display font-semibold text-fg leading-tight">

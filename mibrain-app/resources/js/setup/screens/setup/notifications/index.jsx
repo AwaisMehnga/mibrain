@@ -1,20 +1,26 @@
-import { useNavigate } from 'react-router'
 import { Sun, Pill, CheckCircle } from 'lucide-react'
 import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 export default function NotificationsPermission() {
-  const navigate = useNavigate()
   const { actions } = useAuth()
 
+  const finishOnboarding = async (notificationsEnabled) => {
+    actions.updatePreferences({ notificationsEnabled })
+    await actions.saveOnboardingProgress({
+      currentStep: 'complete',
+      isComplete: true,
+      preferences: { notificationsEnabled },
+    })
+    await actions.completeOnboarding()
+    window.location.replace('/')
+  }
+
   const handleEnable = () => {
-    actions.updatePreferences({ notificationsEnabled: true })
-    void actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
-    navigate('/setup/register')
+    void finishOnboarding(true)
   }
 
   const handleSkip = () => {
-    void actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
-    navigate('/setup/register')
+    void finishOnboarding(false)
   }
 
   return (
@@ -51,6 +57,7 @@ export default function NotificationsPermission() {
 
       {/* Content Area */}
       <div className="flex flex-col gap-6 px-5 pb-12">
+        <p className="text-[13px] font-medium text-fg-muted">5 of 5</p>
         <div className="space-y-4">
           <h2 className="text-[28px] font-display font-semibold text-fg leading-tight">
             Know before it hits.

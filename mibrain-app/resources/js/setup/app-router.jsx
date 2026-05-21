@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from 'react'
-import { useRoutes, useNavigate, useLocation } from 'react-router'
+import { useRoutes, useLocation, useNavigate } from 'react-router'
 import { routes } from './_routes'
 import { useAuth } from '../mibrain/hooks/useAuth'
 
@@ -9,6 +9,8 @@ function ProtectedRoutes() {
   const { auth, isHydrated, isBootstrapped, actions } = useAuth()
   const element = useRoutes(routes)
   const currentPath = location.pathname
+  const guestPaths = ['/setup/login', '/setup/register', '/setup/welcome']
+  const onboardingPaths = ['/setup/conditions', '/setup/triggers', '/setup/medications', '/setup/notifications']
 
   useEffect(() => {
     if (isHydrated && !isBootstrapped) {
@@ -20,11 +22,21 @@ function ProtectedRoutes() {
       return
     }
 
-    if (auth.isAuthenticated && currentPath !== '/') {
-      navigate('/', { replace: true })
+    if (auth.isAuthenticated && auth.isOnboarded && currentPath !== '/') {
+      window.location.replace('/')
       return
     }
-  }, [actions, auth.isAuthenticated, currentPath, isBootstrapped, isHydrated, navigate])
+
+    if (auth.isAuthenticated && !auth.isOnboarded && !onboardingPaths.includes(currentPath)) {
+      navigate('/setup/conditions', { replace: true })
+      return
+    }
+
+    if (!auth.isAuthenticated && !guestPaths.includes(currentPath)) {
+      navigate('/setup/register', { replace: true })
+      return
+    }
+  }, [actions, auth.isAuthenticated, auth.isOnboarded, currentPath, isBootstrapped, isHydrated, navigate])
 
   if (!isHydrated || !isBootstrapped) {
     return (

@@ -17,7 +17,7 @@ Route::prefix('v1')->middleware('web')->group(function () {
         Route::get('onboarding', [OnboardingController::class, 'catalog'])->name('api.v1.catalog.onboarding');
     });
 
-    Route::prefix('onboarding')->group(function () {
+    Route::prefix('onboarding')->middleware('auth')->group(function () {
         Route::put('/', [OnboardingController::class, 'store'])->name('api.v1.onboarding.store');
         Route::post('complete', [OnboardingController::class, 'complete'])->name('api.v1.onboarding.complete');
     });

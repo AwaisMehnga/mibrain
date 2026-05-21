@@ -63,7 +63,7 @@ export default function Conditions() {
 
   return (
     <OnboardingLayout
-      step={1}
+      step={2}
       totalSteps={5}
       onContinue={handleContinue}
       continueDisabled={selected.length === 0}
