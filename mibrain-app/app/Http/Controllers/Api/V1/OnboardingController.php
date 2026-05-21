@@ -10,6 +10,7 @@ use App\Models\TriggerCatalog;
 use App\Models\UserCondition;
 use App\Models\UserMedication;
 use App\Models\UserTrigger;
+use App\Models\User;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,6 +33,10 @@ class OnboardingController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()) {
+            return ApiResponse::unauthenticated();
+        }
+
         $validator = Validator::make($request->all(), [
             'conditions' => ['nullable', 'array'],
             'triggers' => ['nullable', 'array'],
@@ -49,7 +54,10 @@ class OnboardingController extends Controller
         }
 
         $draft = $validator->validated();
-        $request->session()->put('onboarding_draft', array_merge($request->session()->get('onboarding_draft', []), $draft));
+        $draft = array_merge($request->session()->get('onboarding_draft', []), $draft);
+
+        $request->session()->put('onboarding_draft', $draft);
+        $this->persistOnboardingData($request->user(), $draft);
 
         return ApiResponse::success([
             'currentStep' => $draft['currentStep'] ?? $request->session()->get('onboarding_draft.currentStep', 'welcome'),
@@ -59,7 +67,11 @@ class OnboardingController extends Controller
 
     public function complete(Request $request): JsonResponse
     {
-        $this->persistOnboardingDraft($request);
+        if (! $request->user()) {
+            return ApiResponse::unauthenticated();
+        }
+
+        $this->persistOnboardingData($request->user(), $request->session()->get('onboarding_draft', []));
 
         $request->user()->forceFill(['is_onboarded' => true])->save();
 
@@ -137,11 +149,8 @@ class OnboardingController extends Controller
             ];
     }
 
-    private function persistOnboardingDraft(Request $request): void
+    private function persistOnboardingData(User $user, array $draft): void
     {
-        $user = $request->user();
-        $draft = $request->session()->get('onboarding_draft', []);
-
         $profileData = [
             'country_code' => $draft['countryCode'] ?? $user->profile?->country_code,
             'timezone' => $draft['timezone'] ?? $user->profile?->timezone ?? config('app.timezone'),

@@ -9,7 +9,6 @@ use App\Models\NotificationPreference;
 use App\Models\TriggerCatalog;
 use App\Models\UserCondition;
 use App\Models\UserMedication;
-use App\Models\UserProfile;
 use App\Models\UserTrigger;
 use App\Models\User;
 use App\Support\ApiResponse;
@@ -68,11 +67,7 @@ class AuthController extends Controller
 
         return ApiResponse::success([
             'user' => $this->transformUser($user->fresh()->load('profile', 'subscriptions.plan')),
-            'tokens' => [
-                'accessToken' => null,
-                'refreshToken' => null,
-                'expiresIn' => null,
-            ],
+            'tokens' => $this->issueTokens($user, $request),
         ], status: 201);
     }
 
@@ -97,16 +92,20 @@ class AuthController extends Controller
 
         return ApiResponse::success([
             'user' => $this->transformUser($user),
-            'tokens' => [
-                'accessToken' => null,
-                'refreshToken' => null,
-                'expiresIn' => null,
-            ],
+            'tokens' => $this->issueTokens($user, $request),
         ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
+        if ($token = $request->attributes->get('api_access_token')) {
+            $token->delete();
+
+            return ApiResponse::success([
+                'loggedOut' => true,
+            ]);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
@@ -115,6 +114,23 @@ class AuthController extends Controller
         return ApiResponse::success([
             'loggedOut' => true,
         ]);
+    }
+
+    private function issueTokens(User $user, Request $request): array
+    {
+        $plainToken = Str::random(80);
+
+        $user->apiAccessTokens()->create([
+            'name' => $request->userAgent() ?: 'api',
+            'token' => hash('sha256', $plainToken),
+        ]);
+
+        return [
+            'accessToken' => $plainToken,
+            'tokenType' => 'Bearer',
+            'refreshToken' => null,
+            'expiresIn' => null,
+        ];
     }
 
     private function transformUser(User $user): array

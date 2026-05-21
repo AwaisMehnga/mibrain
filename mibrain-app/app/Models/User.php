@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->hasOne(UserProfile::class);
     }
 
+    public function apiAccessTokens()
+    {
+        return $this->hasMany(ApiAccessToken::class);
+    }
+
     public function devices()
     {
         return $this->hasMany(UserDevice::class);
