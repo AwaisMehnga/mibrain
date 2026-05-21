@@ -1,5 +1,19 @@
 # miBrain Design System & Coding Guidelines
 
+## Non-Negotiable: One Backend For Web And Mobile
+
+miBrain must use the same backend, same API routes, same controllers, same validation, and same business logic for both the web app and the React Native mobile app.
+
+- Do not create separate backend endpoints, controllers, services, validation rules, or onboarding/auth flows just because the caller is web or mobile.
+- Keep all reusable behavior in shared backend code. If web and mobile need the same action, expose it through the same `/api/v1/*` API contract.
+- The web app may use Laravel session cookies, and the mobile app may use bearer tokens, but both must call the same API endpoints and receive the same JSON response shapes.
+- API endpoints must not depend on browser-only behavior such as React Router navigation, Blade redirects, or frontend-only guards. Protected API actions should return JSON errors such as `401 UNAUTHENTICATED` or `403 ONBOARDING_REQUIRED`.
+- Frontend route guards are UX helpers only. Backend middleware/controllers must enforce authentication and onboarding rules for both clients.
+- Do not duplicate code for mobile and web. Add shared helpers, middleware, services, resources, or request classes when logic needs to be reused.
+- When changing auth, onboarding, profile, notifications, check-ins, history, reports, or any user data feature, verify that both clients can use the same request payloads and response fields without client-specific branches.
+
+Always preserve mobile/web compatibility before adding new functionality.
+
 ## Overview
 miBrain is a migraine tracking app with a cohesive dark theme, accessible components, and clean Tailwind-based styling. This document defines the design system, component structure, and coding conventions to maintain consistency across all sessions.
 
