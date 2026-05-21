@@ -2,6 +2,7 @@ import { Suspense, useEffect } from 'react'
 import { useRoutes, useLocation } from 'react-router'
 import { routes } from './_routes'
 import { useAuth } from './hooks/useAuth'
+import Splash from '../ui/splash'
 
 function ProtectedRoutes() {
   const location = useLocation()
@@ -31,17 +32,11 @@ function ProtectedRoutes() {
   }, [actions, auth.isAuthenticated, auth.isOnboarded, currentPath, isBootstrapped, isHydrated])
 
   if (!isHydrated || !isBootstrapped) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-primary">
-        <div className="text-fg">Loading...</div>
-      </div>
-    )
+    return <Splash isVisible />
   }
 
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-primary">
-      <div className="text-fg">Loading...</div>
-    </div>}>
+    <Suspense fallback={<Splash isVisible />}>
       {element}
     </Suspense>
   )

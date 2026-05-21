@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { AlertTriangle, Funnel, Calendar, Pill, Share2 } from 'lucide-react'
+import { AlertTriangle, Calendar, Filter, Pill, Share2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { attacks } from './history-data'
 
@@ -62,7 +62,8 @@ export default function History() {
       <header className="flex items-center justify-between">
         <h1 className="font-serif text-[24px] text-fg">Attack History</h1>
         <div className="flex items-center gap-3">
-          <button className="p-2 rounded-md bg-tertiary"><Funnel className="text-fg-secondary" /></button>
+          <button className="p-2 rounded-md bg-tertiary">
+            <Filter className="text-fg-secondary" /></button>
           <Link to="/history/calendar" className="p-2 rounded-md bg-tertiary"><Calendar className="text-fg-secondary" /></Link>
           <Link to="/report" className="p-2 rounded-md bg-tertiary"><Share2 className="text-fg-secondary" /></Link>
         </div>
