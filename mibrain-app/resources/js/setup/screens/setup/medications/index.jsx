@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import OnboardingLayout from '../../../ui/components/OnboardingLayout'
-import { useAuth } from '../../../hooks/useAuth'
+import OnboardingLayout from '../components/OnboardingLayout'
+import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 const ACUTE_MEDS = [
   'Sumatriptan',

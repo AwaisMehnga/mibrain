@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Brain, Zap, Eye, Pill, Calendar, Cloud } from 'lucide-react'
-import OnboardingLayout from '../../../ui/components/OnboardingLayout'
-import SelectCard from '../../../ui/components/SelectCard'
-import { useAuth } from '../../../hooks/useAuth'
+import OnboardingLayout from '../components/OnboardingLayout'
+import SelectCard from '../../../../ui/components/SelectCard'
+import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 const CONDITIONS = [
   {

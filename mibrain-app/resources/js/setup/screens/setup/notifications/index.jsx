@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 import { Sun, Pill, CheckCircle } from 'lucide-react'
-import { useAuth } from '../../../hooks/useAuth'
+import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 export default function NotificationsPermission() {
   const navigate = useNavigate()

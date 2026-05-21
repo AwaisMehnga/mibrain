@@ -1,9 +1,10 @@
 import { Suspense, useEffect } from 'react'
-import { useRoutes, useLocation } from 'react-router'
+import { useRoutes, useNavigate, useLocation } from 'react-router'
 import { routes } from './_routes'
-import { useAuth } from './hooks/useAuth'
+import { useAuth } from '../mibrain/hooks/useAuth'
 
 function ProtectedRoutes() {
+  const navigate = useNavigate()
   const location = useLocation()
   const { auth, onboarding } = useAuth()
 
@@ -15,16 +16,16 @@ function ProtectedRoutes() {
 
     // If user is not onboarded, redirect to welcome
     if (!auth.isOnboarded) {
-      window.location.assign('/setup/welcome')
+      navigate('/setup/welcome')
       return
     }
 
     // If user is not authenticated, redirect to signin
     if (!auth.isAuthenticated) {
-      window.location.assign('/setup/signin')
+      navigate('/setup/signin')
       return
     }
-  }, [auth.isAuthenticated, auth.isOnboarded, location.pathname])
+  }, [auth.isAuthenticated, auth.isOnboarded, location.pathname, navigate])
 
   const element = useRoutes(routes)
 

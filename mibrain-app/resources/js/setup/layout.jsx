@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import NavBar from '../ui/components/nav-bar'
 import Topbar from '../ui/components/topbar'
-import Splash from './screens/splash'
+import Splash from '../mibrain/screens/splash'
 
 export default function Layout() {
   const [showSplash, setShowSplash] = useState(true)

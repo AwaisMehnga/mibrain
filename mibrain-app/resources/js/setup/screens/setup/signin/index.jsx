@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import FormInput from '../../../ui/components/FormInput'
-import { useAuth } from '../../../hooks/useAuth'
+import FormInput from '../../../../ui/components/FormInput'
+import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 export default function SignIn() {
   const navigate = useNavigate()

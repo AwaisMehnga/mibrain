@@ -4,8 +4,8 @@ import {
   Moon, Sun, Cloud, Smartphone, Coffee, Wine, Brain, UtensilsCrossed,
   Flower2, Droplets, Wind, Lightbulb, Plane, Volume2,
 } from 'lucide-react'
-import OnboardingLayout from '../../../ui/components/OnboardingLayout'
-import { useAuth } from '../../../hooks/useAuth'
+import OnboardingLayout from '../components/OnboardingLayout'
+import { useAuth } from '../../../../mibrain/hooks/useAuth'
 
 const TRIGGERS = [
   { id: 'sleep', label: 'Poor sleep', icon: Moon },

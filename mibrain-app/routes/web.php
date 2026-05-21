@@ -3,14 +3,17 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return auth()->check() ? view('mibrain') : view('welcome');
+})->name('mibrain');
+
+Route::get('setup/{any?}', function () {
+    return view('setup');
+})->where('any', '.*')->name('setup');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('mibrain/{any?}', function () {
-        // return blade view for mibrain dashboard using the llarevel view
+    Route::get('{any}', function () {
         return view('mibrain');
-    })->where('any', '.*')->name('mibrain');
+    })->where('any', '^(check-in|log|insights|risk-detail|history|report|notifications|profile)(/.*)?$');
 });
 
 require __DIR__.'/settings.php';

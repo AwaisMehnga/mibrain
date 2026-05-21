@@ -25,15 +25,6 @@ const Report = lazy(() => import('./screens/report'))
 const Notifications = lazy(() => import('./screens/notifications'))
 const Profile = lazy(() => import('./screens/profile'))
 
-// Setup screens
-const Welcome = lazy(() => import('./screens/setup/welcome'))
-const Conditions = lazy(() => import('./screens/setup/conditions'))
-const Triggers = lazy(() => import('./screens/setup/triggers'))
-const Medications = lazy(() => import('./screens/setup/medications'))
-const NotificationsPermission = lazy(() => import('./screens/setup/notifications'))
-const CreateAccount = lazy(() => import('./screens/setup/create-account'))
-const SignIn = lazy(() => import('./screens/setup/signin'))
-
 export const routes = [
     {
         path: '/',
@@ -129,46 +120,6 @@ export const routes = [
                 name: 'Profile',
                 path: 'profile',
                 element: <Profile />,
-            },
-        ],
-    },
-    {
-        path: '/setup',
-        children: [
-            {
-                name: 'Welcome',
-                path: 'welcome',
-                element: <Welcome />,
-            },
-            {
-                name: 'Conditions',
-                path: 'conditions',
-                element: <Conditions />,
-            },
-            {
-                name: 'Triggers',
-                path: 'triggers',
-                element: <Triggers />,
-            },
-            {
-                name: 'Medications',
-                path: 'medications',
-                element: <Medications />,
-            },
-            {
-                name: 'Notifications Permission',
-                path: 'notifications',
-                element: <NotificationsPermission />,
-            },
-            {
-                name: 'Create Account',
-                path: 'create-account',
-                element: <CreateAccount />,
-            },
-            {
-                name: 'Sign In',
-                path: 'signin',
-                element: <SignIn />,
             },
         ],
     }

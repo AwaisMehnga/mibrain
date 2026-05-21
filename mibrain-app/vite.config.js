@@ -10,7 +10,8 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/js/index.css',
-                'resources/js/mibrain/App.jsx'
+                'resources/js/mibrain/App.jsx',
+                'resources/js/setup/app.jsx'
             ],
             refresh: true,
         }),

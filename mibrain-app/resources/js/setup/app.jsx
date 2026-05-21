@@ -15,6 +15,6 @@ function App() {
 }
 
 
-createRoot(document.getElementById('mibrain')).render(
+createRoot(document.getElementById('setup')).render(
     <App />
 )
