@@ -1,16 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return view('welcome');
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('mibrain', function () {
+    Route::get('mibrain/{any?}', function () {
+        // return blade view for mibrain dashboard using the llarevel view
         return view('mibrain');
-    })->name('mibrain');
+    })->where('any', '.*')->name('mibrain');
 });
 
 require __DIR__.'/settings.php';

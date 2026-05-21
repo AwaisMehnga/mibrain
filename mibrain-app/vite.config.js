@@ -9,6 +9,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
+                'resources/js/index.css',
                 'resources/js/mibrain/App.jsx'
             ],
             refresh: true,
