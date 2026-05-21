@@ -8,11 +8,13 @@ export default function NotificationsPermission() {
 
   const handleEnable = () => {
     actions.updatePreferences({ notificationsEnabled: true })
-    navigate('/setup/create-account')
+    void actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
+    navigate('/setup/register')
   }
 
   const handleSkip = () => {
-    navigate('/setup/create-account')
+    void actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
+    navigate('/setup/register')
   }
 
   return (

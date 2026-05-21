@@ -98,9 +98,8 @@ export default function Profile() {
 
   async function handleSignOut() {
     setSigningOut(true)
-    await new Promise((resolve) => setTimeout(resolve, 350))
-    logout()
-    navigate('/setup/signin', { replace: true })
+    await logout()
+    navigate('/setup/login', { replace: true })
   }
 
   // Show sub-screen if active

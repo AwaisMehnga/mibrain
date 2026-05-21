@@ -37,13 +37,14 @@ export default function Triggers() {
 
   const handleContinue = () => {
     actions.setTriggers(selected)
+    void actions.saveOnboardingProgress({ currentStep: 'medications', isComplete: false })
     navigate('/setup/medications')
   }
 
   return (
     <OnboardingLayout
       step={2}
-      totalSteps={4}
+      totalSteps={5}
       onContinue={handleContinue}
       continueDisabled={selected.length === 0}
     >

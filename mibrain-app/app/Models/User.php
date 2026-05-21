@@ -21,6 +21,7 @@ class User extends Authenticatable
         'phone_encrypted',
         'phone_verified_at',
         'status',
+        'is_onboarded',
     ];
 
     protected $hidden = [
@@ -34,6 +35,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_onboarded' => 'boolean',
         ];
     }
 

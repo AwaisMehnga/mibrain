@@ -6,28 +6,32 @@ import { useAuth } from '../mibrain/hooks/useAuth'
 function ProtectedRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { auth, onboarding } = useAuth()
+  const { auth, isHydrated, isBootstrapped, actions } = useAuth()
+  const element = useRoutes(routes)
 
   useEffect(() => {
-    // Skip protection for setup routes
-    if (location.pathname.startsWith('/setup')) {
+    if (isHydrated && !isBootstrapped) {
+      void actions.bootstrapAuth()
       return
     }
 
-    // If user is not onboarded, redirect to welcome
-    if (!auth.isOnboarded) {
-      navigate('/setup/welcome')
+    if (!isHydrated || !isBootstrapped) {
       return
     }
 
-    // If user is not authenticated, redirect to signin
-    if (!auth.isAuthenticated) {
-      navigate('/setup/signin')
+    if (auth.isAuthenticated && auth.isOnboarded) {
+      navigate('/', { replace: true })
       return
     }
-  }, [auth.isAuthenticated, auth.isOnboarded, location.pathname, navigate])
+  }, [actions, auth.isAuthenticated, auth.isOnboarded, isBootstrapped, isHydrated, location.pathname, navigate])
 
-  const element = useRoutes(routes)
+  if (!isHydrated || !isBootstrapped) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-primary">
+        <div className="text-fg">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <Suspense fallback={<div className="flex items-center justify-center h-screen bg-primary">

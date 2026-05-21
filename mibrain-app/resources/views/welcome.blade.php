@@ -1,6 +1,6 @@
 <x-layouts.guest title="{{ config('app.name', 'Laravel') }}">
     <div class="grid w-full gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
-        <section class="flex min-h-[34rem] flex-col justify-between rounded-[2rem] border border-border/70 bg-secondary/70 p-8 shadow-float backdrop-blur-xl sm:p-10">
+        <section class="flex min-h-136 flex-col justify-between rounded-4xl border border-border/70 bg-secondary/70 p-8 shadow-float backdrop-blur-xl sm:p-10">
             <div>
                 <span class="inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
                     Mibrain
@@ -29,7 +29,7 @@
             </div>
         </section>
 
-        <section class="flex items-center justify-center rounded-[2rem] border border-border/70 bg-primary/85 p-6 shadow-float backdrop-blur-xl sm:p-8">
+        <section class="flex items-center justify-center rounded-4xl border border-border/70 bg-primary/85 p-6 shadow-float backdrop-blur-xl sm:p-8">
             <div class="w-full max-w-md rounded-[1.75rem] border border-border bg-tertiary/70 p-6 sm:p-8">
                 <p class="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Get started</p>
                 <h2 class="mt-3 font-display text-3xl text-fg">Choose an entry point</h2>
@@ -38,10 +38,10 @@
                 </p>
 
                 <div class="mt-8 grid gap-3">
-                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-3 font-semibold text-fg-inverse transition hover:opacity-90">
+                    <a href="/setup/login" class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-3 font-semibold text-fg-inverse transition hover:opacity-90">
                         Sign in
                     </a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-xl border border-border bg-transparent px-4 py-3 font-semibold text-fg transition hover:border-accent/60 hover:bg-accent/10">
+                    <a href="/setup/welcome" class="inline-flex items-center justify-center rounded-xl border border-border bg-transparent px-4 py-3 font-semibold text-fg transition hover:border-accent/60 hover:bg-accent/10">
                         Create account
                     </a>
                 </div>

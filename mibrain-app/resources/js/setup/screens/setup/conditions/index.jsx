@@ -57,13 +57,14 @@ export default function Conditions() {
 
   const handleContinue = () => {
     actions.setConditions(selected)
+    void actions.saveOnboardingProgress({ currentStep: 'triggers', isComplete: false })
     navigate('/setup/triggers')
   }
 
   return (
     <OnboardingLayout
       step={1}
-      totalSteps={4}
+      totalSteps={5}
       onContinue={handleContinue}
       continueDisabled={selected.length === 0}
     >

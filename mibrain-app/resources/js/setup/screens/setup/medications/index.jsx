@@ -43,13 +43,14 @@ export default function Medications() {
   const handleContinue = () => {
     actions.setAcuteMedications(acuteMeds)
     actions.setPreventiveMedications(preventiveMeds)
+    void actions.saveOnboardingProgress({ currentStep: 'notifications', isComplete: false })
     navigate('/setup/notifications')
   }
 
   return (
     <OnboardingLayout
       step={3}
-      totalSteps={4}
+      totalSteps={5}
       onContinue={handleContinue}
       continueLabel="Continue"
     >

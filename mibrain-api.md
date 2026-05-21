@@ -19,7 +19,19 @@ Base URL:
 6. Sensitive fields such as notes, medication dose, transcript, phone, email, and report files are encrypted or protected by backend policies.
 7. Backend creates audit events for sensitive reads, exports, report sharing, admin/support access, and deletion.
 
-## 2. Standard Response Shapes
+## 2. Implemented In Backend
+
+Use these existing routes instead of duplicating them in future work.
+
+1. `GET /api/v1/me`
+2. `POST /api/v1/auth/register`
+3. `POST /api/v1/auth/login`
+4. `POST /api/v1/auth/logout`
+5. `GET /api/v1/catalog/onboarding`
+6. `PUT /api/v1/onboarding`
+7. `POST /api/v1/onboarding/complete`
+
+## 3. Standard Response Shapes
 
 ### Success
 
@@ -79,9 +91,11 @@ Common error codes:
 6. `RATE_LIMITED`
 7. `SERVER_ERROR`
 
-## 3. Auth Endpoints
+## 4. Auth Endpoints
 
 ### POST `/auth/register`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/AuthController.php`
 
 Create account.
 
@@ -120,6 +134,8 @@ Response:
 ```
 
 ### POST `/auth/login`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/AuthController.php`
 
 Payload:
 
@@ -175,6 +191,8 @@ Response:
 ```
 
 ### POST `/auth/logout`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/AuthController.php`
 
 Payload:
 
@@ -238,9 +256,11 @@ Response:
 }
 ```
 
-## 4. Bootstrap And Home
+## 5. Bootstrap And Home
 
 ### GET `/me`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/AuthController.php`
 
 Fetch current authenticated user and app state.
 
@@ -312,9 +332,11 @@ Response:
 }
 ```
 
-## 5. Onboarding
+## 6. Onboarding
 
 ### GET `/catalog/onboarding`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/OnboardingController.php`
 
 Fetch selectable setup options.
 
@@ -343,6 +365,8 @@ Response:
 ```
 
 ### PUT `/onboarding`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/OnboardingController.php`
 
 Save onboarding progress. Can be called after each step or once at the end.
 
@@ -379,6 +403,8 @@ Response:
 ```
 
 ### POST `/onboarding/complete`
+
+Implemented in backend: `routes/api.php`, `app/Http/Controllers/Api/V1/OnboardingController.php`
 
 Payload:
 

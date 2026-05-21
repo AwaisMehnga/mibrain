@@ -35,6 +35,9 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('api/auth/me', [AuthenticatedSessionController::class, 'show'])
+        ->name('api.auth.me');
+
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 

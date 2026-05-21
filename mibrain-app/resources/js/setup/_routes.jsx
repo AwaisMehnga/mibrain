@@ -1,4 +1,4 @@
-import { lazy } from 'react'
+import { Navigate, lazy } from 'react'
 import Layout from './layout'
 
 const Home = lazy(() => import('../mibrain/screens/home'))
@@ -39,6 +39,10 @@ export const routes = [
         path: '/setup',
         children: [
             {
+                index: true,
+                element: <Navigate to="login" replace />,
+            },
+            {
                 name: 'Welcome',
                 path: 'welcome',
                 element: <Welcome />,
@@ -65,12 +69,12 @@ export const routes = [
             },
             {
                 name: 'Create Account',
-                path: 'create-account',
+                path: 'register',
                 element: <CreateAccount />,
             },
             {
                 name: 'Sign In',
-                path: 'signin',
+                path: 'login',
                 element: <SignIn />,
             },
         ],

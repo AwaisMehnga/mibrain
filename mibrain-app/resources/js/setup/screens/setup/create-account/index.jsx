@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import FormInput from '../../../../ui/components/FormInput'
 import { useAuth } from '../../../../mibrain/hooks/useAuth'
+import OnboardingLayout from '../components/OnboardingLayout'
 
 export default function CreateAccount() {
   const navigate = useNavigate()
@@ -50,118 +51,125 @@ export default function CreateAccount() {
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    if (e?.preventDefault) {
+      e.preventDefault()
+    }
 
     if (!validateForm()) return
 
     setIsLoading(true)
-    setTimeout(() => {
-      actions.createAccount(formData.email, formData.password, formData.name)
-      actions.completeOnboarding()
-      navigate('/')
-    }, 500)
+    setErrors({})
+
+    try {
+      await actions.saveOnboardingProgress({ currentStep: 'register', isComplete: false })
+      await actions.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+      })
+      await actions.completeOnboarding()
+      navigate('/', { replace: true })
+    } catch (error) {
+      const serverErrors = error?.response?.data?.error?.fields ?? error?.response?.data?.errors ?? {}
+      setErrors({
+        name: serverErrors.name?.[0] ?? serverErrors.name,
+        email: serverErrors.email?.[0] ?? serverErrors.email,
+        password: serverErrors.password?.[0] ?? serverErrors.password,
+        confirmPassword: serverErrors.password_confirmation?.[0] ?? serverErrors.password_confirmation,
+        form: error?.response?.data?.error?.message ?? error?.response?.data?.message ?? 'Unable to create your account.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-primary">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-6 shrink-0">
-        <div className="flex-1" />
-        <span className="text-[13px] font-medium text-fg-muted">4 of 4</span>
-      </div>
+    <OnboardingLayout step={5} totalSteps={5} onBack={() => navigate('/setup/notifications')} continueLabel="Create Account" onContinue={handleSubmit} continueDisabled={isLoading}>
+      <div className="space-y-6 py-6">
+        <div className="space-y-2">
+          <h2 className="text-[26px] font-display font-semibold text-fg leading-tight">
+            Create your account
+          </h2>
+          <p className="text-[15px] text-fg-secondary">
+            Your data stays private and encrypted. Always.
+          </p>
+        </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-5">
-        <div className="space-y-6 py-6">
-          <div className="space-y-2">
-            <h2 className="text-[26px] font-display font-semibold text-fg leading-tight">
-              Create your account
-            </h2>
-            <p className="text-[15px] text-fg-secondary">
-              Your data stays private and encrypted. Always.
-            </p>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {errors.form && (
+            <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-[13px] text-danger">
+              {errors.form}
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput
-              label="Full Name"
-              name="name"
-              type="text"
-              placeholder="Your name"
-              value={formData.name}
-              onChange={handleChange}
-              error={errors.name}
-              required
-              autoComplete="name"
-            />
+          <FormInput
+            label="Full Name"
+            name="name"
+            type="text"
+            placeholder="Your name"
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+            required
+            autoComplete="name"
+          />
 
-            <FormInput
-              label="Email Address"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-              required
-              autoComplete="email"
-            />
+          <FormInput
+            label="Email Address"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            error={errors.email}
+            required
+            autoComplete="email"
+          />
 
-            <FormInput
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="At least 8 characters"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              required
-              autoComplete="new-password"
-            />
+          <FormInput
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="At least 8 characters"
+            value={formData.password}
+            onChange={handleChange}
+            error={errors.password}
+            required
+            autoComplete="new-password"
+          />
 
-            <FormInput
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
-              required
-              autoComplete="new-password"
-            />
+          <FormInput
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            error={errors.confirmPassword}
+            required
+            autoComplete="new-password"
+          />
 
-            {/* Privacy Note */}
-            <p className="text-[12px] text-fg-muted text-center mt-6">
-              We never sell your data.{' '}
-              <button type="button" className="text-accent hover:underline">
-                See our Privacy Policy
-              </button>
-            </p>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-14 bg-accent text-fg-inverse rounded-xl font-semibold text-[15px] transition-all duration-200 hover:bg-accent active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-8"
-            >
-              {isLoading ? 'Creating...' : 'Create Account'}
+          <p className="text-[12px] text-fg-muted text-center mt-6">
+            We never sell your data.{' '}
+            <button type="button" className="text-accent hover:underline">
+              See our Privacy Policy
             </button>
-          </form>
+          </p>
+        </form>
 
-          {/* Sign In Link */}
-          <div className="text-center">
-            <button
-              onClick={() => navigate('/setup/signin')}
-              className="text-[14px] text-fg-muted hover:text-fg transition-colors"
-            >
-              Already have an account?{' '}
-              <span className="text-accent font-semibold">Sign in</span>
-            </button>
-          </div>
+        <div className="text-center">
+          <button
+            onClick={() => navigate('/setup/login')}
+            className="text-[14px] text-fg-muted hover:text-fg transition-colors"
+          >
+            Already have an account?{' '}
+            <span className="text-accent font-semibold">Sign in</span>
+          </button>
         </div>
       </div>
-    </div>
+    </OnboardingLayout>
   )
 }

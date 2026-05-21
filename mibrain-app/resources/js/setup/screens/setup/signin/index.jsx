@@ -44,11 +44,25 @@ export default function SignIn() {
     if (!validateForm()) return
 
     setIsLoading(true)
-    setTimeout(() => {
-      actions.signIn(formData.email, formData.password)
-      actions.completeOnboarding()
-      navigate('/')
-    }, 500)
+    setErrors({})
+
+    actions
+      .login({ email: formData.email, password: formData.password })
+      .then(() => {
+        navigate('/', { replace: true })
+      })
+      .catch((error) => {
+        const serverErrors = error?.response?.data?.errors ?? {}
+        if (serverErrors.email || serverErrors.password) {
+          setErrors({
+            email: serverErrors.email?.[0],
+            password: serverErrors.password?.[0],
+          })
+        } else {
+          setErrors({ form: error?.response?.data?.message ?? 'Unable to sign in. Try again.' })
+        }
+      })
+      .finally(() => setIsLoading(false))
   }
 
   return (
@@ -66,6 +80,12 @@ export default function SignIn() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {errors.form && (
+              <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-[13px] text-danger">
+                {errors.form}
+              </div>
+            )}
+
             <FormInput
               label="Email Address"
               name="email"
@@ -116,7 +136,7 @@ export default function SignIn() {
           {/* Sign Up Link */}
           <div className="text-center">
             <button
-              onClick={() => navigate('/setup/welcome')}
+              onClick={() => navigate('/setup/register')}
               className="text-[14px] text-fg-muted hover:text-fg transition-colors"
             >
               Don't have an account?{' '}

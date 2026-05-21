@@ -1,64 +1,148 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../services/auth'
+import { completeOnboarding as completeOnboardingRequest, saveOnboardingProgress as saveOnboardingProgressRequest } from '../services/onboarding'
 
-const initialState = {
-  auth: {
-    isAuthenticated: false,
-    isOnboarded: false,
-    user: null,
-    token: null,
-  },
-  healthProfile: {
-    conditions: [],
-    triggers: [],
-    medications: {
-      acute: [],
-      preventive: [],
+function createInitialState() {
+  return {
+    auth: {
+      isAuthenticated: false,
+      isOnboarded: false,
+      user: null,
+      token: null,
     },
-  },
-  preferences: {
-    notificationsEnabled: false,
-    riskAlertTime: '07:30',
-    checkinTime: '08:00',
-    panicButtonLocation: 'home-screen',
-    theme: 'dark',
-  },
-  dailyCheckin: null,
-  onboarding: {
-    completedSteps: [],
-    currentStep: 'welcome',
-  },
+    healthProfile: {
+      conditions: [],
+      triggers: [],
+      medications: {
+        acute: [],
+        preventive: [],
+      },
+    },
+    preferences: {
+      notificationsEnabled: false,
+      riskAlertTime: '07:30',
+      checkinTime: '08:00',
+      panicButtonLocation: 'home-screen',
+      theme: 'dark',
+    },
+    dailyCheckin: null,
+    onboarding: {
+      completedSteps: [],
+      currentStep: 'welcome',
+    },
+    isHydrated: false,
+    isBootstrapped: false,
+  }
 }
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
-      ...initialState,
+    (set, get) => ({
+      ...createInitialState(),
 
-      // Auth actions
+      setHydrated: (isHydrated) => set({ isHydrated }),
       setAuth: (auth) => set((state) => ({ auth: { ...state.auth, ...auth } })),
-      createAccount: (email, password, name) =>
-        set((state) => ({
-          auth: {
-            ...state.auth,
-            isAuthenticated: true,
-            user: { id: Date.now(), email, name },
-            token: `token_${Date.now()}`,
-          },
-          onboarding: { ...state.onboarding, completedSteps: ['welcome', 'conditions', 'triggers', 'medications', 'notifications', 'create-account'] },
-        })),
-      signIn: (email, password) =>
-        set((state) => ({
-          auth: {
-            ...state.auth,
-            isAuthenticated: true,
-            user: { id: Date.now(), email, name: email.split('@')[0] },
-            token: `token_${Date.now()}`,
-          },
-        })),
-      logout: () => set(initialState),
 
-      // Onboarding actions
+      bootstrapAuth: async () => {
+        if (get().isBootstrapped) {
+          return get().auth
+        }
+
+        set({ isBootstrapped: true })
+
+        try {
+          const payload = await getCurrentUser()
+          const user = payload?.user ?? null
+
+          if (user) {
+            set((state) => ({
+              auth: {
+                ...state.auth,
+                isAuthenticated: true,
+                user,
+                isOnboarded: Boolean(user.isOnboarded),
+              },
+              preferences: payload?.preferences ?? state.preferences,
+            }))
+          }
+        } catch {
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              isAuthenticated: false,
+              user: null,
+            },
+          }))
+        }
+
+        return get().auth
+      },
+
+      login: async (credentials) => {
+        const payload = await loginRequest(credentials)
+        const user = payload?.user ?? null
+
+        set((state) => ({
+          auth: {
+            ...state.auth,
+            isAuthenticated: true,
+            user,
+          },
+          isBootstrapped: true,
+        }))
+
+        return user
+      },
+
+      register: async (payload) => {
+        const response = await registerRequest(payload)
+        const user = response?.user ?? null
+
+        set((state) => ({
+          auth: {
+            ...state.auth,
+            isAuthenticated: true,
+            user,
+          },
+          isBootstrapped: true,
+        }))
+
+        return user
+      },
+
+      createAccount: async (email, password, name) => get().register({ email, password, name }),
+      signIn: async (email, password) => get().login({ email, password }),
+
+      saveOnboardingProgress: async (draft = {}) => {
+        const payload = {
+          conditions: get().healthProfile.conditions,
+          triggers: get().healthProfile.triggers,
+          medications: {
+            acute: get().healthProfile.medications.acute,
+            preventive: get().healthProfile.medications.preventive,
+          },
+          preferences: get().preferences,
+          currentStep: get().onboarding.currentStep,
+          isComplete: false,
+          ...draft,
+        }
+
+        return saveOnboardingProgressRequest(payload)
+      },
+
+      logout: async () => {
+        try {
+          await logoutRequest()
+        } finally {
+          set((state) => ({
+            ...createInitialState(),
+            isHydrated: state.isHydrated,
+            isBootstrapped: true,
+          }))
+        }
+      },
+
       setConditions: (conditions) =>
         set((state) => ({
           healthProfile: { ...state.healthProfile, conditions },
@@ -85,7 +169,6 @@ export const useAuthStore = create(
           },
         })),
 
-      // Preferences actions
       updatePreferences: (prefs) =>
         set((state) => ({
           preferences: { ...state.preferences, ...prefs },
@@ -96,15 +179,15 @@ export const useAuthStore = create(
           dailyCheckin: checkin,
         })),
 
-      // Onboarding completion
       completeOnboarding: () =>
-        set((state) => ({
-          auth: { ...state.auth, isOnboarded: true },
-          onboarding: { ...state.onboarding, completedSteps: ['all'] },
-        })),
+        completeOnboardingRequest().then(() => {
+          set((state) => ({
+            auth: { ...state.auth, isOnboarded: true },
+            onboarding: { ...state.onboarding, completedSteps: ['all'] },
+          }))
+        }),
 
-      // Reset
-      resetOnboarding: () => set({ ...initialState }),
+      resetOnboarding: () => set({ ...createInitialState(), isHydrated: get().isHydrated, isBootstrapped: true }),
     }),
     {
       name: 'mibrain-auth-store',
@@ -115,6 +198,9 @@ export const useAuthStore = create(
         dailyCheckin: state.dailyCheckin,
         onboarding: state.onboarding,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHydrated(true)
+      },
     }
   )
 )

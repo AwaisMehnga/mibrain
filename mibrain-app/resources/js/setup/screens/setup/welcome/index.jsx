@@ -61,7 +61,7 @@ export default function Welcome() {
         {/* Secondary Link */}
         <div className="text-center">
           <button
-            onClick={() => navigate('/setup/signin')}
+            onClick={() => navigate('/setup/login')}
             className="text-[14px] text-accent hover:text-accent/80 transition-colors"
           >
             Already have an account? <span className="font-semibold underline">Sign in</span>

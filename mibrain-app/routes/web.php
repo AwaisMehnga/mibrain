@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check() ? view('mibrain') : view('welcome');
+    return Auth::check() ? view('mibrain') : view('welcome');
 })->name('mibrain');
 
 Route::get('setup/{any?}', function () {

@@ -1,32 +1,42 @@
 import { Suspense, useEffect } from 'react'
-import { useRoutes, useLocation } from 'react-router'
+import { useRoutes, useLocation, useNavigate } from 'react-router'
 import { routes } from './_routes'
 import { useAuth } from './hooks/useAuth'
 
 function ProtectedRoutes() {
   const location = useLocation()
-  const { auth, onboarding } = useAuth()
+  const navigate = useNavigate()
+  const { auth, isHydrated, isBootstrapped, actions } = useAuth()
+  const element = useRoutes(routes)
 
   useEffect(() => {
-    // Skip protection for setup routes
-    if (location.pathname.startsWith('/setup')) {
+    if (isHydrated && !isBootstrapped) {
+      void actions.bootstrapAuth()
       return
     }
 
-    // If user is not onboarded, redirect to welcome
-    if (!auth.isOnboarded) {
-      window.location.assign('/setup/welcome')
+    if (!isHydrated || !isBootstrapped) {
       return
     }
 
-    // If user is not authenticated, redirect to signin
     if (!auth.isAuthenticated) {
-      window.location.assign('/setup/signin')
+      navigate('/setup/login', { replace: true })
       return
     }
-  }, [auth.isAuthenticated, auth.isOnboarded, location.pathname])
 
-  const element = useRoutes(routes)
+    if (!auth.isOnboarded) {
+      navigate('/setup/welcome', { replace: true })
+      return
+    }
+  }, [actions, auth.isAuthenticated, auth.isOnboarded, isBootstrapped, isHydrated, navigate, location.pathname])
+
+  if (!isHydrated || !isBootstrapped) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-primary">
+        <div className="text-fg">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <Suspense fallback={<div className="flex items-center justify-center h-screen bg-primary">
