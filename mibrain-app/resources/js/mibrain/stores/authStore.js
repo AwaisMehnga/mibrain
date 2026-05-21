@@ -49,8 +49,6 @@ export const useAuthStore = create(
           return get().auth
         }
 
-        set({ isBootstrapped: true })
-
         try {
           const payload = await getCurrentUser()
           const user = payload?.user ?? null
@@ -65,15 +63,27 @@ export const useAuthStore = create(
               },
               preferences: payload?.preferences ?? state.preferences,
             }))
+          } else {
+            set((state) => ({
+              auth: {
+                ...state.auth,
+                isAuthenticated: false,
+                isOnboarded: false,
+                user: null,
+              },
+            }))
           }
         } catch {
           set((state) => ({
             auth: {
               ...state.auth,
               isAuthenticated: false,
+              isOnboarded: false,
               user: null,
             },
           }))
+        } finally {
+          set({ isBootstrapped: true })
         }
 
         return get().auth
@@ -87,6 +97,7 @@ export const useAuthStore = create(
           auth: {
             ...state.auth,
             isAuthenticated: true,
+            isOnboarded: Boolean(user?.isOnboarded),
             user,
           },
           isBootstrapped: true,
@@ -103,6 +114,7 @@ export const useAuthStore = create(
           auth: {
             ...state.auth,
             isAuthenticated: true,
+            isOnboarded: Boolean(user?.isOnboarded),
             user,
           },
           isBootstrapped: true,

@@ -1,13 +1,13 @@
 import { Suspense, useEffect } from 'react'
-import { useRoutes, useLocation, useNavigate } from 'react-router'
+import { useRoutes, useLocation } from 'react-router'
 import { routes } from './_routes'
 import { useAuth } from './hooks/useAuth'
 
 function ProtectedRoutes() {
   const location = useLocation()
-  const navigate = useNavigate()
   const { auth, isHydrated, isBootstrapped, actions } = useAuth()
   const element = useRoutes(routes)
+  const currentPath = location.pathname
 
   useEffect(() => {
     if (isHydrated && !isBootstrapped) {
@@ -19,16 +19,11 @@ function ProtectedRoutes() {
       return
     }
 
-    if (!auth.isAuthenticated) {
-      navigate('/setup/login', { replace: true })
+    if (!auth.isAuthenticated && currentPath !== '/setup/login') {
+      window.location.replace('/setup/login')
       return
     }
-
-    if (!auth.isOnboarded) {
-      navigate('/setup/welcome', { replace: true })
-      return
-    }
-  }, [actions, auth.isAuthenticated, auth.isOnboarded, isBootstrapped, isHydrated, navigate, location.pathname])
+  }, [actions, auth.isAuthenticated, currentPath, isBootstrapped, isHydrated])
 
   if (!isHydrated || !isBootstrapped) {
     return (
@@ -48,4 +43,3 @@ function ProtectedRoutes() {
 }
 
 export default ProtectedRoutes
-

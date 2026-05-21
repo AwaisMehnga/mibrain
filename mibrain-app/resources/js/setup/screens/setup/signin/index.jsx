@@ -48,8 +48,8 @@ export default function SignIn() {
 
     actions
       .login({ email: formData.email, password: formData.password })
-      .then(() => {
-        navigate('/', { replace: true })
+      .then((user) => {
+        navigate(user?.isOnboarded ? '/' : '/setup/welcome', { replace: true })
       })
       .catch((error) => {
         const serverErrors = error?.response?.data?.errors ?? {}

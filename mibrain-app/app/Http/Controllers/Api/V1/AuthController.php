@@ -140,11 +140,24 @@ class AuthController extends Controller
 
         return [
             'notificationsEnabled' => (bool) ($riskAlert?->enabled ?? false),
-            'riskAlertTime' => $riskAlert?->preferred_time?->format('H:i') ?? '07:30',
-            'checkinTime' => $dailyCheckin?->preferred_time?->format('H:i') ?? '08:00',
+            'riskAlertTime' => $this->formatPreferredTime($riskAlert?->preferred_time, '07:30'),
+            'checkinTime' => $this->formatPreferredTime($dailyCheckin?->preferred_time, '08:00'),
             'panicButtonLocation' => 'home-screen',
             'theme' => 'dark',
         ];
+    }
+
+    private function formatPreferredTime(mixed $time, string $default): string
+    {
+        if ($time === null || $time === '') {
+            return $default;
+        }
+
+        if ($time instanceof \DateTimeInterface) {
+            return $time->format('H:i');
+        }
+
+        return substr((string) $time, 0, 5) ?: $default;
     }
 
     private function hydrateUserFromSessionDraft(Request $request, User $user): void

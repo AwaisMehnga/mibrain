@@ -8,7 +8,7 @@ Route::get('/', function () {
 })->name('mibrain');
 
 Route::get('setup/{any?}', function () {
-    return view('setup');
+    return Auth::check() ? redirect()->route('mibrain') : view('setup');
 })->where('any', '.*')->name('setup');
 
 Route::middleware(['auth'])->group(function () {

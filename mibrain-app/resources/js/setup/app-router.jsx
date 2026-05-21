@@ -8,6 +8,7 @@ function ProtectedRoutes() {
   const location = useLocation()
   const { auth, isHydrated, isBootstrapped, actions } = useAuth()
   const element = useRoutes(routes)
+  const currentPath = location.pathname
 
   useEffect(() => {
     if (isHydrated && !isBootstrapped) {
@@ -19,11 +20,11 @@ function ProtectedRoutes() {
       return
     }
 
-    if (auth.isAuthenticated && auth.isOnboarded) {
+    if (auth.isAuthenticated && currentPath !== '/') {
       navigate('/', { replace: true })
       return
     }
-  }, [actions, auth.isAuthenticated, auth.isOnboarded, isBootstrapped, isHydrated, location.pathname, navigate])
+  }, [actions, auth.isAuthenticated, currentPath, isBootstrapped, isHydrated, navigate])
 
   if (!isHydrated || !isBootstrapped) {
     return (
@@ -43,4 +44,3 @@ function ProtectedRoutes() {
 }
 
 export default ProtectedRoutes
-
