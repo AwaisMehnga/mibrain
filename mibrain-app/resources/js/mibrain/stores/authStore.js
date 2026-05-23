@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../services/auth'
 import { completeOnboarding as completeOnboardingRequest, saveOnboardingProgress as saveOnboardingProgressRequest } from '../services/onboarding'
 
@@ -9,7 +9,6 @@ function createInitialState() {
       isAuthenticated: false,
       isOnboarded: false,
       user: null,
-      token: null,
     },
     healthProfile: {
       conditions: [],
@@ -203,8 +202,8 @@ export const useAuthStore = create(
     }),
     {
       name: 'mibrain-auth-store',
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
-        auth: state.auth,
         healthProfile: state.healthProfile,
         preferences: state.preferences,
         dailyCheckin: state.dailyCheckin,

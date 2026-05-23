@@ -6,13 +6,26 @@ miBrain must use the same backend, same API routes, same controllers, same valid
 
 - Do not create separate backend endpoints, controllers, services, validation rules, or onboarding/auth flows just because the caller is web or mobile.
 - Keep all reusable behavior in shared backend code. If web and mobile need the same action, expose it through the same `/api/v1/*` API contract.
-- The web app may use Laravel session cookies, and the mobile app may use bearer tokens, but both must call the same API endpoints and receive the same JSON response shapes.
+- Browser clients must store JWTs only in backend-issued `HttpOnly`, `Secure` cookies with strict same-site policy. Never store access or refresh tokens in `localStorage`, `sessionStorage`, IndexedDB, Zustand persistence, or any JavaScript-readable browser storage.
+- Mobile and other non-browser clients may use bearer tokens with `Authorization: Bearer <accessToken>`. The backend must support both the secure browser-cookie path and the bearer-token path through the same `/api/v1/*` routes.
+- Auth APIs must return the planned token shape for non-browser clients and set the browser auth cookies for web clients: `accessToken`, `refreshToken`, and `expiresIn`. Refresh and logout must operate through the shared `/api/v1/auth/*` endpoints.
 - API endpoints must not depend on browser-only behavior such as React Router navigation, Blade redirects, or frontend-only guards. Protected API actions should return JSON errors such as `401 UNAUTHENTICATED` or `403 ONBOARDING_REQUIRED`.
 - Frontend route guards are UX helpers only. Backend middleware/controllers must enforce authentication and onboarding rules for both clients.
 - Do not duplicate code for mobile and web. Add shared helpers, middleware, services, resources, or request classes when logic needs to be reused.
 - When changing auth, onboarding, profile, notifications, check-ins, history, reports, or any user data feature, verify that both clients can use the same request payloads and response fields without client-specific branches.
 
 Always preserve mobile/web compatibility before adding new functionality.
+
+### API Response Rules
+
+All `/api/v1/*` controllers and middleware must return the standard response envelope through shared helpers such as `ApiResponse`.
+
+- Success responses: `{ success: true, data, meta: { requestId, serverTime } }`
+- Error responses: `{ success: false, error: { code, message, fields }, meta: { requestId, serverTime } }`
+- Paginated list responses must include `pagination: { limit, cursor, hasMore }`.
+- Do not return raw `response()->json()` from API controllers or API middleware except inside the shared response helper.
+- Validation errors must use `VALIDATION_ERROR`; auth failures must use `UNAUTHENTICATED`; onboarding gates should use `ONBOARDING_REQUIRED`.
+- Keep request payloads and response fields aligned with `mibrain-api.md` before wiring frontend screens to them.
 
 ## Overview
 miBrain is a migraine tracking app with a cohesive dark theme, accessible components, and clean Tailwind-based styling. This document defines the design system, component structure, and coding conventions to maintain consistency across all sessions.

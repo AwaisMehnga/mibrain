@@ -12,13 +12,17 @@ use App\Models\UserMedication;
 use App\Models\UserTrigger;
 use App\Models\User;
 use App\Support\ApiResponse;
+use App\Support\JwtToken;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends Controller
 {
@@ -31,7 +35,7 @@ class AuthController extends Controller
         }
 
         return ApiResponse::success([
-            'user' => $this->transformUser($user->load('profile', 'subscriptions.plan', 'notificationPreferences')),
+            'user' => $this->transformBootstrapUser($user->load('profile', 'subscriptions.plan', 'notificationPreferences')),
             'preferences' => $this->preferencesFor($user),
         ]);
     }
@@ -59,16 +63,15 @@ class AuthController extends Controller
             'is_onboarded' => false,
         ]);
 
-        $this->hydrateUserFromSessionDraft($request, $user);
+        $this->hydrateUserFromPayload($request, $user);
         $this->persistOnboardingDraft($request, $user);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $tokens = $this->issueTokens($user, $request);
 
-        return ApiResponse::success([
-            'user' => $this->transformUser($user->fresh()->load('profile', 'subscriptions.plan')),
-            'tokens' => $this->issueTokens($user, $request),
-        ], status: 201);
+        return $this->withTokenCookies(ApiResponse::success([
+            'user' => $this->transformAuthUser($user->fresh()),
+            ...$this->tokenPayload($request, $tokens),
+        ], status: 201), $tokens);
     }
 
     public function login(Request $request): JsonResponse
@@ -82,58 +85,207 @@ class AuthController extends Controller
             return ApiResponse::validation($validator->errors()->toArray());
         }
 
-        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        $user = User::query()->where('email', $request->input('email'))->first();
+
+        if (! $user || ! Hash::check($request->input('password'), $user->password)) {
             return ApiResponse::error('UNAUTHENTICATED', 'These credentials do not match our records.', ['email' => 'These credentials do not match our records.'], 401);
         }
 
-        $request->session()->regenerate();
+        $user->load('profile', 'subscriptions.plan');
 
-        $user = $request->user()->load('profile', 'subscriptions.plan');
+        $tokens = $this->issueTokens($user, $request);
 
-        return ApiResponse::success([
-            'user' => $this->transformUser($user),
-            'tokens' => $this->issueTokens($user, $request),
+        return $this->withTokenCookies(ApiResponse::success([
+            'user' => $this->transformAuthUser($user),
+            ...$this->tokenPayload($request, $tokens),
+        ]), $tokens);
+    }
+
+    public function refresh(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'refreshToken' => ['nullable', 'string'],
         ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::validation($validator->errors()->toArray());
+        }
+
+        $refreshToken = $request->input('refreshToken') ?: $request->cookie('mibrain_refresh_token');
+
+        if (! $refreshToken) {
+            return ApiResponse::unauthenticated('Refresh token is required.');
+        }
+
+        $resolvedToken = JwtToken::resolve($refreshToken, 'refresh');
+
+        if (! $resolvedToken) {
+            return ApiResponse::unauthenticated('Refresh token is invalid or expired.');
+        }
+
+        $resolvedToken['token']->delete();
+
+        $tokens = $this->issueTokens($resolvedToken['user'], $request);
+
+        return $this->withTokenCookies(ApiResponse::success($this->usesCookieAuth($request) ? [
+            'expiresIn' => JwtToken::ACCESS_TTL,
+        ] : $tokens), $tokens);
     }
 
     public function logout(Request $request): JsonResponse
     {
         if ($token = $request->attributes->get('api_access_token')) {
             $token->delete();
+        }
 
-            return ApiResponse::success([
-                'loggedOut' => true,
+        $refreshToken = $request->input('refreshToken') ?: $request->cookie('mibrain_refresh_token');
+
+        if ($refreshToken) {
+            JwtToken::revoke($refreshToken, 'refresh');
+        }
+
+        if (! $token && ! $refreshToken) {
+            return ApiResponse::unauthenticated();
+        }
+
+        return $this->withoutTokenCookies(ApiResponse::success([
+            'loggedOut' => true,
+        ]));
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email'],
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::validation($validator->errors()->toArray());
+        }
+
+        Password::sendResetLink($request->only('email'));
+
+        return ApiResponse::success([
+            'message' => 'If an account exists, reset instructions were sent.',
+        ]);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'resetToken' => ['required', 'string'],
+            'newPassword' => ['required', 'string', 'min:8'],
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::validation($validator->errors()->toArray());
+        }
+
+        $resetRecord = DB::table('password_reset_tokens')
+            ->get()
+            ->first(function ($record) use ($request) {
+                return $this->resetTokenMatches($request->input('resetToken'), $record->token);
+            });
+
+        $user = $resetRecord ? User::query()->where('email', $resetRecord->email)->first() : null;
+
+        if (! $resetRecord || ! $user) {
+            return ApiResponse::validation([
+                'resetToken' => 'The reset token is invalid or expired.',
             ]);
         }
 
-        Auth::guard('web')->logout();
+        $user->forceFill([
+            'password' => Hash::make($request->input('newPassword')),
+            'remember_token' => Str::random(60),
+        ])->save();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $user->apiAccessTokens()->delete();
+        DB::table('password_reset_tokens')->where('email', $resetRecord->email)->delete();
+
+        event(new PasswordReset($user));
 
         return ApiResponse::success([
-            'loggedOut' => true,
+            'passwordUpdated' => true,
         ]);
     }
 
     private function issueTokens(User $user, Request $request): array
     {
-        $plainToken = Str::random(80);
+        return JwtToken::issuePair($user, $request->userAgent() ?: 'api');
+    }
 
-        $user->apiAccessTokens()->create([
-            'name' => $request->userAgent() ?: 'api',
-            'token' => hash('sha256', $plainToken),
-        ]);
+    private function tokenPayload(Request $request, array $tokens): array
+    {
+        if ($this->usesCookieAuth($request)) {
+            return [
+                'tokens' => [
+                    'expiresIn' => JwtToken::ACCESS_TTL,
+                ],
+            ];
+        }
 
         return [
-            'accessToken' => $plainToken,
-            'tokenType' => 'Bearer',
-            'refreshToken' => null,
-            'expiresIn' => null,
+            'tokens' => $tokens,
         ];
     }
 
-    private function transformUser(User $user): array
+    private function usesCookieAuth(Request $request): bool
+    {
+        return $request->header('X-Auth-Mode') === 'cookie';
+    }
+
+    private function withTokenCookies(JsonResponse $response, array $tokens): JsonResponse
+    {
+        $response->headers->setCookie($this->tokenCookie('mibrain_access_token', $tokens['accessToken'], JwtToken::ACCESS_TTL));
+        $response->headers->setCookie($this->tokenCookie('mibrain_refresh_token', $tokens['refreshToken'], JwtToken::REFRESH_TTL));
+
+        return $response;
+    }
+
+    private function withoutTokenCookies(JsonResponse $response): JsonResponse
+    {
+        $response->headers->setCookie($this->tokenCookie('mibrain_access_token', '', -3600));
+        $response->headers->setCookie($this->tokenCookie('mibrain_refresh_token', '', -3600));
+
+        return $response;
+    }
+
+    private function tokenCookie(string $name, string $value, int $ttl): Cookie
+    {
+        return new Cookie(
+            $name,
+            $value,
+            now()->addSeconds($ttl),
+            '/',
+            null,
+            (bool) config('app.jwt_cookie_secure'),
+            true,
+            false,
+            config('app.jwt_cookie_same_site', 'strict')
+        );
+    }
+
+    private function resetTokenMatches(string $plainToken, string $storedToken): bool
+    {
+        try {
+            return Hash::check($plainToken, $storedToken) || hash_equals($plainToken, $storedToken);
+        } catch (\RuntimeException) {
+            return hash_equals($plainToken, $storedToken);
+        }
+    }
+
+    private function transformAuthUser(User $user): array
+    {
+        return [
+            'id' => (string) $user->getKey(),
+            'name' => $user->name,
+            'email' => $user->email,
+            'isOnboarded' => (bool) $user->is_onboarded,
+        ];
+    }
+
+    private function transformBootstrapUser(User $user): array
     {
         return [
             'id' => (string) $user->getKey(),
@@ -141,7 +293,6 @@ class AuthController extends Controller
             'email' => $user->email,
             'countryCode' => $user->profile?->country_code,
             'timezone' => $user->profile?->timezone,
-            'locale' => $user->profile?->locale,
             'isOnboarded' => (bool) $user->is_onboarded,
             'subscriptionStatus' => $user->subscriptions->first()?->status,
         ];
@@ -176,9 +327,9 @@ class AuthController extends Controller
         return substr((string) $time, 0, 5) ?: $default;
     }
 
-    private function hydrateUserFromSessionDraft(Request $request, User $user): void
+    private function hydrateUserFromPayload(Request $request, User $user): void
     {
-        $draft = $request->session()->get('onboarding_draft', []);
+        $draft = $request->input('onboarding', []);
 
         if ($draft === []) {
             $user->profile()->create([
@@ -196,13 +347,11 @@ class AuthController extends Controller
             'locale' => $draft['locale'] ?? $request->input('locale', app()->getLocale()),
             'measurement_system' => $draft['preferences']['measurementSystem'] ?? 'imperial',
         ]);
-
-        $request->session()->put('onboarding_draft', $draft);
     }
 
     private function persistOnboardingDraft(Request $request, User $user): void
     {
-        $draft = $request->session()->get('onboarding_draft', []);
+        $draft = $request->input('onboarding', []);
 
         $profileData = [
             'country_code' => $draft['countryCode'] ?? $request->input('countryCode'),

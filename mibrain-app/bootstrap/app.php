@@ -16,10 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->api(append: [
+            AuthenticateApiRequest::class,
+            EnsureUserIsOnboarded::class,
+        ]);
+
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
-            AuthenticateApiRequest::class,
             EnsureUserIsOnboarded::class,
         ]);
 

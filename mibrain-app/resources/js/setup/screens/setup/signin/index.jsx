@@ -52,14 +52,14 @@ export default function SignIn() {
         window.location.replace(user?.isOnboarded ? '/' : '/setup/conditions')
       })
       .catch((error) => {
-        const serverErrors = error?.response?.data?.errors ?? {}
+        const serverErrors = error?.response?.data?.error?.fields ?? error?.response?.data?.errors ?? {}
         if (serverErrors.email || serverErrors.password) {
           setErrors({
-            email: serverErrors.email?.[0],
-            password: serverErrors.password?.[0],
+            email: serverErrors.email?.[0] ?? serverErrors.email,
+            password: serverErrors.password?.[0] ?? serverErrors.password,
           })
         } else {
-          setErrors({ form: error?.response?.data?.message ?? 'Unable to sign in. Try again.' })
+          setErrors({ form: error?.response?.data?.error?.message ?? error?.response?.data?.message ?? 'Unable to sign in. Try again.' })
         }
       })
       .finally(() => setIsLoading(false))

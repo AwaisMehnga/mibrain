@@ -4,13 +4,16 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->middleware('web')->group(function () {
+Route::prefix('v1')->group(function () {
     Route::get('me', [AuthController::class, 'me'])->name('api.v1.me');
 
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('api.v1.auth.register');
         Route::post('login', [AuthController::class, 'login'])->name('api.v1.auth.login');
+        Route::post('refresh', [AuthController::class, 'refresh'])->name('api.v1.auth.refresh');
         Route::post('logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
+        Route::post('password/forgot', [AuthController::class, 'forgotPassword'])->name('api.v1.auth.password.forgot');
+        Route::post('password/reset', [AuthController::class, 'resetPassword'])->name('api.v1.auth.password.reset');
     });
 
     Route::prefix('catalog')->group(function () {

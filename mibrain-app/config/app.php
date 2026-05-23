@@ -99,6 +99,12 @@ return [
 
     'key' => env('APP_KEY'),
 
+    'jwt_key' => env('JWT_KEY', env('APP_KEY')),
+
+    'jwt_cookie_secure' => env('JWT_COOKIE_SECURE', env('APP_ENV') !== 'local'),
+
+    'jwt_cookie_same_site' => env('JWT_COOKIE_SAME_SITE', 'strict'),
+
     'previous_keys' => [
         ...array_filter(
             explode(',', env('APP_PREVIOUS_KEYS', ''))

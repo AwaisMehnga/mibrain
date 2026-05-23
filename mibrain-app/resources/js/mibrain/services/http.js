@@ -1,30 +1,41 @@
 import axios from 'axios'
 
-function getCsrfToken() {
-  if (typeof document === 'undefined') {
-    return null
-  }
-
-  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? null
-}
-
 const http = axios.create({
   baseURL: '/',
   withCredentials: true,
   headers: {
     Accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
+    'X-Auth-Mode': 'cookie',
   },
 })
 
-http.interceptors.request.use((config) => {
-  const csrfToken = getCsrfToken()
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
 
-  if (csrfToken) {
-    config.headers['X-CSRF-TOKEN'] = csrfToken
+    if (
+      error.response?.status === 401 &&
+      !originalRequest?._retry &&
+      !originalRequest?.url?.includes('/api/v1/auth/refresh')
+    ) {
+      originalRequest._retry = true
+
+      await axios.post(
+        '/api/v1/auth/refresh',
+        {},
+        {
+          withCredentials: true,
+          headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-Auth-Mode': 'cookie' },
+        }
+      )
+
+      return http(originalRequest)
+    }
+
+    return Promise.reject(error)
   }
-
-  return config
-})
+)
 
 export default http

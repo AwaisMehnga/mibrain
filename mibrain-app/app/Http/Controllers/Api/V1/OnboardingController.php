@@ -54,13 +54,11 @@ class OnboardingController extends Controller
         }
 
         $draft = $validator->validated();
-        $draft = array_merge($request->session()->get('onboarding_draft', []), $draft);
 
-        $request->session()->put('onboarding_draft', $draft);
         $this->persistOnboardingData($request->user(), $draft);
 
         return ApiResponse::success([
-            'currentStep' => $draft['currentStep'] ?? $request->session()->get('onboarding_draft.currentStep', 'welcome'),
+            'currentStep' => $draft['currentStep'] ?? 'welcome',
             'isComplete' => (bool) ($draft['isComplete'] ?? false),
         ]);
     }
@@ -71,11 +69,7 @@ class OnboardingController extends Controller
             return ApiResponse::unauthenticated();
         }
 
-        $this->persistOnboardingData($request->user(), $request->session()->get('onboarding_draft', []));
-
         $request->user()->forceFill(['is_onboarded' => true])->save();
-
-        $request->session()->forget('onboarding_draft');
 
         return ApiResponse::success([
             'isOnboarded' => true,
